@@ -1,0 +1,316 @@
+\documentclass[12pt]{article}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage[frenchb]{babel}
+\usepackage{subfigure}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{mcode}  % pour avoir les bons quotes dans matlab
+\usepackage{url}
+\usepackage{listings}
+
+
+% Pour pouvoir utiliser les accents directement dans LaTeX, sans utiliser les commandes \'
+%\usepackage[latin1]{inputenc} % entree 8 bits iso-latin1
+\usepackage[utf8]{inputenc} % entree 8 bits utf8, fonctionne avec MikTeX sur Windows.
+\usepackage[T1]{fontenc}      % encodage 8 bits des fontes utilisees
+
+% Pour agrandir les marges
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.75in}
+\addtolength{\topmargin}{-.875in}
+\addtolength{\textheight}{1.75in}
+
+\makeatletter\renewcommand{\ALG@name}{Algorithme}
+
+
+\begin{document}
+\selectlanguage{frenchb} 
+\title{GLO-4001/GLO-7021 Introduction à la robotique mobile \\  TP1 Version complète 1.0 \\ Date de remise : 23 octobre 2017 à 23h55}
+\author{En équipe de 1 à 2.}
+\maketitle
+
+
+{\bf Attention! N'oubliez pas d'attacher le code de toutes les questions dans la remise .zip de votre travail. Si les codes sont manquants, nous pourrons retirer jusqu'à 20\% de la note. }
+
+Pour tous les étudiants, vous devez fournir un rapport en un seul document (format pdf) et les fichiers matlab ou Python zippé. Pour toutes les questions, n'oubliez pas de mettre le détail des calculs.
+
+Pour les étudiants en GLO-7021, veuillez noter qu'une présentation déficiente dans le rapport (manque de clarté, orthographe et grammaire, police de caractère illisible sur figure matlab, etc) pourra entraîner une pénalité allant jusqu'à 10 \% de la note. Le rapport doit aussi obligatoirement être formaté avec Latex.
+
+
+% ================== Carte =======================
+\section{Carte 2D à partir d'un gyroscope et d'un capteur de distance (15 pts)}
+
+Un robot (simulé) possède 1 gyroscope à taux bruité et un capteur de distance (calibré, Équation~\ref{SensorFunc}) placé exactement au centre du robot. La fonction du capteur de distance, avant bruit, est :
+\begin{equation}
+z(d) = 1/d  \mbox {, en Volt}.
+\label{SensorFunc}
+\end{equation}
+où $d$ est en mètres ($m$). Le bruit sur la mesure de voltage est une distribution normale non-biaisée $\sigma_z$ = 0.025 Volt. La portée maximale du capteur est autour de 5~$m$. Si le capteur ne détecte pas un obstacle, il retourne une valeur de 0 Volt exactement. Il vous faut donc vous assurer de tester cette condition quand vous inverserez la fonction de capteur à l'Équation~\ref{SensorFunc} pour passer d'une mesure en Volt vers une mesure estimée de distance en $m$. 
+
+Le gyroscope donne la vitesse angulaire du robot, en $rad/s$. Le gyroscope a un bruit non-biaisé suivant une distribution normale avec $\sigma_g$ = 0.03 rad/s. Le fichier \texttt{Q1Donnees.mat} contient les données \texttt{z}, \texttt{g} échantillonnées à 25~\emph{Hz}, ainsi que le temps \texttt{t}, pour un essai de robot simulé. Lors de cet essai simulé, le robot était immobile pendant les premiers instants (courbe de voltage du gyroscope relativement plate), puis a effectué un tour complet ($2\pi$~$rad$), avant de s'immobiliser de nouveau pendant quelques instants.
+
+
+\subsection{Carte 2D locale (5 pts)}
+\label{CarteLocale}
+
+Tracez une carte en 2D (un nuage de points), avec l'option \texttt{'ro'} dans la commande \texttt{plot} dans matlab (ou fonction équivalente dans python), à partir des mesures \texttt{g} du gyroscope et les mesures \texttt{z} du capteur de distance, comme dans la \emph{Partie 6 - Création d'une carte de l'environnement} du laboratoire sur les gyroscopes. Vous avez donc besoin de retrouver $\theta(t)$ et la distance $d(t)$. Pour cette carte (dite \emph{locale}), faites l'hypothèse que le robot est à (0,0) et $\theta(0)=0$ (donc la première mesure est aligné sur l'axe des $x$). Assurez-vous de convertir les données en coordonnées cartésiennes. Stockez les coordonnées cartésiennes des points dans une matrice \texttt{P} de taille $2\times n$, où $n$ est le nombre de points que vous avez choisis de conserver pour faire la carte. N'utilisez-pas de commande de tracés en coordonnées polaires (comme la commande \texttt{polar} dans matlab), mais plutôt \texttt{plot} pour tracer les points contenus dans votre matrice \texttt{P}. Incluez cette carte dans votre rapport.
+
+\newpage
+\subsection{Localisation du robot dans la carte globale (10 pts)}
+La matrice \texttt{Carte} contient un tracé des murs de l'environnement (Fig.~\ref{Environment}) dans lequel le robot se trouvait lors de la prise du scan 2D. Pour charger en mémoire cette carte et la tracer, faites les commandes suivantes dans matlab :
+
+\vspace{-0.1in}
+\begin{verbatim}
+load Carte.mat
+plot(Carte(1,:),Carte(2,:)); 
+axis equal;
+\end{verbatim}
+\vspace{-0.2in}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.65\textwidth]{Carte.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.3in}
+ \caption{Carte de l'environnement dans lequel le scan 2D a été effectué. Les lignes bleues représentent les murs dans l'environnement. Les coordonnées sont dans le repère global. La position du robot lors du scan est inconnue.}
+ \label{Environment}
+\end{figure}
+
+Votre tâche consiste à trouver par essai et erreur la pose globale initiale $[x_g, y_g, \theta_g]^T$ du robot où le scan 2D a été effectué (donc au début du scan), en alignant le mieux possible la carte locale de points trouvée à la section~\ref{CarteLocale} sur la carte globale. Vous devez donc trouver la matrice de rotation $\mathbf{R}$ et de translation $\mathbf{T}$ qui permettra de superposer raisonnablement bien le nuage de points de la carte locale sur la carte globale. Pour faire la conversion de coordonnées, modifiez votre matrice \texttt{P} en coordonnées homogènes \texttt{PHomogene}. La conversion des coordonnées locales en globales sera donc :
+$$
+\texttt{PGlobal} = \mathbf{T}*\mathbf{R}*\texttt{PHomogene}
+$$
+
+Dans votre réponse, indiquez la pose initiale du robot $[x_g, y_g, \theta_g]^T$ ainsi que les matrices $\mathbf{R}$ et $\mathbf{T}$ correspondantes. Incluez la figure montrant la carte globale, le nuage de points alignés \texttt{PGlobal} superposé sur cette carte globale, et la position du centre du robot que vous marquerez par un cercle vert (\texttt{'go'}). Ne mettez pas les données invalides du capteurs sur la carte. Gardez en tête que les points les plus éloignés du robot sont les plus bruités.
+
+\vspace{0.4 in}
+\emph{Note: Ce problème s'appelle "calage de nuage de points" (point-cloud registration). Nous verrons un algorithme (\emph{ICP : Iterative Closest Point}) permettant de faire cette tâche automatiquement (mais sans garantie d'être la bonne solution) dans la deuxième moitié du cours. L'exercice ici est de vous familiariser avec la problématique et aussi avec la difficulté de trouver cette pose globale initiale.}
+
+% ================== CAMERA =======================
+\newpage
+\section{Modèle de caméra et positionnement par caméra}
+Ces exercices serviront à vous familiariser à la fois au processus de génération d'images et de localisation par caméra. Dans un premier temps, vous aller devoir faire le code permettant la génération d'images pour un monde simplifié. Dans un deuxième temps, vous allez utiliser du code pour vous localiser par triangulation. Finalement, à l'aide de nombreuses simulations, vous allez être à même de voir l'impact de l'incertitude des mesures sur l'incertitude de la position. Pour simplifier le problème, nous allons toujours utiliser les coordonnées du référentiel de la caméra. La distance focale de la caméra est de $f=1200$ pixels. Notez que ces questions sont fortement inspirées du laboratoire sur les caméras.
+
+\subsection{Génération d'une image (5 pts)}
+Vous avez trois points de repère, situé au coordonnées \emph{caméra} suivantes (en $m$):
+\begin{itemize}
+\item $L_1$ : [-0.25, 0 , 1.25]
+\item $L_2$ : [0,       0   , 1]
+\item $L_3$ : [0.25, 0, 1.25]
+\end{itemize}
+L'axe optique de la caméra est parallèle au plancher, et l'axe des $y$ pointe vers le bas. Vue de haut, l'axe des $x$ pointe vers la droite. Le diagramme de la Figure~\ref{DiagLocalisation} illustre le problème.
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.15\textwidth]{LocalisationCamera.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.3in}
+ \caption{Diagramme illustrant la position des points de repères par rapport au repère de la caméra.}
+ \label{DiagLocalisation}
+\end{figure}
+
+Faites une fonction qui prend la photo, c'est-à-dire qui calcule la positions des trois points de repère $L_i$ dans les coordonnées $u$ et $v$ du plan image de la caméra. Notez que selon la convention choisie, $v$ pointe vers le bas et $u$ vers la droite. Incluez dans votre rapport les coordonnées obtenues.
+
+\subsection{Estimation de la pose de la caméra à partir des angles $\alpha$ et $\beta$ (5 pts)}
+Reprenez le code du laboratoire pour calculer les angles $\alpha$ et $\beta$ à partir de l'image, et retrouver la position de la caméra. Faites l'équivalence avec une carte 2D où les points de repères $L_i$ y sont situés, avec $x_{carte}=x$ et $y_{carte}=z$. Ainsi votre fonction retournera les coordonnées de la caméra dans cette carte 2D.
+
+\subsection{Impact du bruit sur l'estimation des repères (10 pts)}
+En réalité, la détection de point de repères dans une image ne se fait pas parfaitement. Ainsi, il y aura une petite erreur entre la position estimée et la position réelle, en pixel, de ces repères. Vous allez simuler cela en ajoutant du bruit sur la coordonnée en $u$ de ces repères. Nous n'ajoutons pas de bruit en $v$ car nous ne sommes intéressés que par la position horizontale de ces repères dans l'image. Ce bruit suivra une distribution gaussienne, avec écart-type $\sigma_p=2$~pixel.
+
+Montrez la distribution des estimés de pose de la caméra sur la carte 2D ($x_{carte}$,$y_{carte}$), en traçant un point par estimé trouvé par simulation. Chaque simulation consiste simplement à  piger les bruits aléatoirement, de les additionner au valeurs véritable des $u$,  d'estimer les angles $\alpha$ et $\beta$ sur ces valeurs bruitées, puis de calculer la pose de la caméra. Répéter cette routine mais pour des nouvelles poses de caméras en la reculant de 1 à 7~$m$, par incrément de 1~$m$. Pour simuler le déplacement de la caméra d'un mètre vers l'arrière par exemple, simplement additionner 1~$m$ aux coordonnées en $z$ des repères avant la prise de photo. Conserver toujours les mêmes coordonnées $x_{carte}$ et $y_{carte}$ pour les points de repères $L_i$, de sorte à voir cette caméra reculer dans la carte 2D.
+
+Pour chaque pose, faites 1000 simulations bruitées et marquez d'un point sur un graphique la pose trouvée, afin de visualiser approximativement cette distribution. Par exemple, la Figure~\ref{ExampleDistribution} montre un ensemble hypothétique de distributions illustrée de la manière demandée, pour des poses comparables à l'exercice demandé.
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.65\textwidth]{ExampleDistribution.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.3in}
+ \caption{Exemple de distributions hypothétiques pour différentes poses de la caméra. Notez la position fixe des repères $L_i$, tel que demandé dans l'exercice, et le centre des distributions qui reculent, selon $y_{carte}$.}
+ \label{ExampleDistribution}
+\end{figure}
+
+
+\subsection{Discussion sur la forme de la distribution  (5 pts) GLO-7021 seulement}
+
+Calculez la covariance empirique de cette distribution pour chacune des poses. Que remarquez-vous sur la forme de ces distributions, en particulier les termes en dehors de la diagonale de cette matrice de covariance ? À quoi attribuez-vous cela ?
+
+Tracez une figure montrant les écart-types $\sigma_{xcarte}$ et  $\sigma_{ycarte}$, en fonction des huit poses réelles  (de 0 à 7~$m$). Discutez.
+
+\subsection{Calcul de l'orientation du robot  (5 pts) GLO-7021 seulement}
+Comment pouvez-vous retrouver l'orientation du robot à partir de ces images, pour un cas générique? Détaillez votre réponse, en incluant un diagramme et les équations nécessaires. 
+
+
+% ================== STEREO =======================
+\newpage
+\section{Imagerie stéréo  (15 pts)}
+Voici une paire d'images en stéréo à la Fig~\ref{ImageStereo} pour une scène composée de 4 tours parfaitement verticales. Le baseline $b$ entre les caméra est de 5 \emph{cm}. La tour verte fait 15~\emph{cm} de longueur et est située à une distance en $z$ (selon l'axe optique) de 95~\emph{cm}. L'axe des $x$ de la caméra pointe vers la droite dans les images. Le point principal est $(0,0)$.
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.95\textwidth]{ImageStereo.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.3in}
+ \caption{Paire d'images en stéréo. Les coordonnées sont en pixels.}
+ \label{ImageStereo}
+\end{figure}
+
+
+\subsection{Distance focale $f$ (4 pts)}
+Estimez la distance focale $f$ (en pixel) de la caméra, en utilisant la tour verte dans l'image de gauche. Donnez le détail de votre calcul.
+
+\subsection{Estimation de la distance $A_z$ de chaque tour LEGO (6 pts)}
+En mesurant la disparité $d$ entre les centres des 3 autres tours (bleu, rouge et jaune) trouvez leur coordonnée $A_z$ respective. Bien indiquer vos mesures et calculs dans votre rapport, et présentez votre réponse finale dans un tableau comme la Table~\ref{TableCoord}.
+
+\begin{table}[h]
+\caption{Distance en $z$ des centres des faces des colonnes.}
+\label{TableCoord}
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+ tour     &    $A_z$ \\
+\hline
+ rouge      &                          \\
+ bleu      &                            \\
+jaune     &                         \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\subsection{Estimation de la coordonnée $A_x$ de chaque tour LEGO (5 pts)}
+Retrouvez la coordonnées en $X$ de chacun des objets par rapport à la caméra de gauche. Faites l'hypothèse que l'axe $X$ de la caméra gauche pointe vers la droite, et que le point principal est situé au centre de l'image. 
+
+\begin{table}[h]
+\caption{Coordonnée en $x$ des centres des faces des colonnes.}
+\label{TableX}
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+ tour     &    $A_x$ \\
+\hline
+ rouge      &                          \\
+ vert      &                           \\
+ bleu     &                            \\
+ jaune     &                         \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+% ==================  FAST =======================
+\newpage
+\section{Extracteur de coin FAST (13 pts)}
+ \label{SectionFAST}
+
+\subsection{Fonction d'extraction des coins FAST (7 pts)}
+Codez une fonction d'extraction de coins basée sur la méthode FAST, pour des cercles tels que montré à la Figure~\ref{FastPixelOrder}. Notez que vous cherchez un coin ayant 12 pixels continus sur l'arc qui satisfassent le critère. La fonction a le prototype suivant :
+\vspace{-0.22in}
+\begin{lstlisting}
+[IsFastCorner IntensiteCoin] = DetectionCoinFAST(Image, Centre, Seuil)
+\end{lstlisting}
+où les arguments en entrée sont :
+\begin{itemize}
+\item \mcode{Image} une image (en noir et blanc);
+\item \mcode{Centre} un vecteur donnant la coordonnée x-y pour laquelle tester la présence d'un coin dans l'\mcode{Image};
+\item \mcode{Seuil} le seuil $t$, tel que spécifié dans les équations de l'acétate 134 de \texttt{03-VisionII.pdf};
+\end{itemize}
+et les sorties sont :
+\begin{itemize}
+\item \mcode{IsFastCorner} indique la présence ou l'absence d'un coin (valeur binaire);
+\item \mcode{IntensiteCoin} donne l'intensité du coin représenté par la somme $V$, telle que spécifiée à l'acétate 135;
+%\item \mcode{Orientation} donne l'orientation du coin, en radian, basée sur l'acétate 145.
+\end{itemize}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.25\textwidth]{FastPixelOrder.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Position des pixels à tester pour le détecteur de coin FAST. Les numéros sont à titre indicatif.}
+ \label{FastPixelOrder}
+\end{figure}
+
+\subsection{Test de votre fonction \texttt{DetectionCoinFAST} sur une image réelle (6 pts)}
+Vous allez maintenant tester votre détecteur de coin une image réelle, à partir d'un jeu de données qui a été capturé sur l'île de Devon dans l'arctique canadien par un robot mobile de l'équipe du Prof. Barfoot (U. Toronto). Cette île est reconnue mondialement pour sa similarité avec le sol martien, et sert donc souvent de lieu d'essai pour la robotique interplanétaire. L'image en question est \texttt{bw-rectified-left-022146small.png}. Parcourez toute cette image (sauf la bordure à l'intérieur de 8 pixels\footnote{Car il ne sera pas possible d'extraire les features BRIEF de la question suivante pour les bordures.}) et trouvez tous les coins, avec la valeur de \mcode{Seuil} de 10\footnote{Les intensités dans l'image sont entre 0 et 255, car codé en entier non-signé de 8 bits (\mcode{uint8})}. Pour chaque coin trouvé, marquez sa position à l'aide d'un petit cercle rouge (option \mcode{`ro'}). Attention! Dans matlab, la fonction \mcode{imshow} intervertie les axes x-y. Pour tracez un cercle rouge qui indique qu'un coin se situe autour du pixel \mcode{Image(X,Y)}, vous devez faire :
+\vspace{-0.22in}
+\begin{lstlisting}
+imshow(Image)
+hold on
+...
+plot(Y,X,'ro');
+\end{lstlisting}
+Combien de coins trouvez-vous dans cette image? Quel pourcentage des pixels sont donc considérés comme des coins? Pourquoi cette scène génère-t-elle ce nombre de coins ? Quelles régions de l'images contiennent plus de coins? Moins de coins? 
+
+Incluez aussi dans votre rapport l'image avec les coins trouvés.
+
+
+%\subsection{Analyse des résultats (GLO-7021 seulement) (5 pts)}
+%Afin de limiter le nombre de coin à traiter, il est possible d'utiliser un heuristique simple, qui permet de ne conserver que les coins les plus forts, basé sur la valeur \mcode{IntensiteCoin}. Cependant, pour utiliser un tel heuristique, il est important de comprendre la distribution de ces valeurs. Dans un histogramme, montrez la distribution des intensités, pour les coins trouvés. À quoi ressemble cette distribution?
+
+
+% ================== Descripteur BRIEF =======================
+
+\newpage
+\section{Descripteur BRIEF (17 pts pour GLO-4001, 27 pts pour GLO-7021)}
+Le descripteur binaire BRIEF est de plus en plus utilisé pour décrire des points de repères naturels dans des problèmes de localisation par caméra. Cette popularité grandissante est en partie dûe à sa facilité de codage, sa robustesse et sa rapidité de calcul. Dans cette question, vous allez explorer l'utilisation de ces descripteurs BRIEF, extraits autour de coins FAST. Pour vous aider, référez-vous au besoin à l'article original du BRIEF : \url{https://www.robots.ox.ac.uk/~vgg/rg/papers/CalonderLSF10.pdf} .
+
+\subsection{Fonction calculant un descripteur BRIEF (3 pts)}
+En matlab ou python, écrivez une fonction \texttt{ExtractBRIEF(ImagePatch,BriefDescriptorConfig)} qui accepte une patch d'image noir et blanc de SxS pixels avec S=15, ainsi qu'une structure de données \texttt{BriefDescriptorConfig}. Cette fonction retourne le descripteur utilisant \texttt{BriefDescriptorConfig}, dans un format de votre choix. Cette fonction ne devrait être que quelques lignes de code. Plus d'information sur \texttt{BriefDescriptorConfig} est disponible à la question suivante.
+
+\subsection{Pipeline d'extraction de features sur une paire d'images réelles (9 pts pour GLO-4001, 11 pts pour GLO-7021)}
+L'extraction de features visuels est en général une opération coûteuse du point de vue calcul. Ainsi, il est préférable de ne se concentrer que sur des points intéressants dans les images, les \emph{keypoints}. Dans la section~\ref{SectionFAST}, vous avez justement codé une fonction permettant l'extraction de keypoints. Un pipeline d'extraction ressemble typiquement au diagramme de la Figure~\ref{PipelineExtraction}.
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.6\textwidth]{PipelineExtraction.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Pipeline d'extraction des features, utilisé lors de la recherche de points de repères naturels dans des images.}
+ \label{PipelineExtraction}
+\end{figure}
+
+Implémentez ce pipeline, en utilisant vos deux fonctions \mcode{DetectionCoinFAST} et \mcode{ExtractBRIEF} pour la première et quatrième étape du pipeline. Pour les étudiants en GLO-4001, la suppression des non-maxima locaux est optionnelle. Pour les GLO-7021, implémenter une version approximative de cette suppression, de votre choix. La sélection des coins sera basée sur la valeur de leur intensité \mcode{IntensiteCoin}: vous ne conserverez que ceux dans le 90ème percentile (autrement dit, les 10~\% les plus forts)\footnote{Une manière facile pour identifier ces coins est de trier la liste des coins selon l'intensité, et de ne conserver que un dixième de cette liste.} . Pour les descripteurs, utilisez \texttt{numberOfBits}=256 bits. Dans ce programme, la structure de données \texttt{BriefDescriptorConfig} qui décrit les \texttt{numberOfBits} paires de pixels pour lesquelles les tests sont faits y est  \underline{initialisée une seule fois}. Pour générer ces paires de pixels (obligatoirement de manière aléatoire), utilisez une distribution uniforme (\texttt{rand()}) sur SxS, avec S=15. Ne vous préoccupez pas des doublons possibles sur ces paires de pixels, pour vous sauver du temps de codage. Assurez-vous que ces paires sont des entiers, via la fonction \texttt{ceil()}. Le descripteur doit être extrait dans une fenêtre centrée sur le coin FAST.
+
+
+\subsection{Appariement features image gauche-droite (5 pts)}
+ Appliquez votre pipeline sur les images suivantes :
+ \begin{itemize}
+ \item \texttt{bw-rectified-left-022146small.png} et
+ \item \texttt{bw-rectified-right-022146small.png}, 
+ \end{itemize}
+ disponibles dans le répertoire inclus avec ce TP. Ces images sont issues d'une caméra stéréo. Pour chaque descripteur de l'image de gauche, trouvez le feature dans l'image de droite qui a la plus petite distance de Hamming, donc le plus semblable. Ceci constituera l'appariement. Dans dans votre rapport, mettez une image représentant ces matches. Le fond sera l'image de gauche, et chaque ligne verte reliera le feature de gauche au feature de droite associé, comme dans l'image~\ref{ExempleImageMontrantMatches}. Si vous avez trop de lignes, choisissez-en un nombre raisonnable de manière aléatoire (une centaine) pour affichage.
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{ExempleImageMontrantMatches.png} 
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Image montrant quelques appariements entre les features de l'image gauche (en fond) vers les features de l'image droite. Notez que j'ai épuré ces matches, afin de ne conserver que de très bons. Vous devriez avoir plus de lignes diagonales dans votre résultat.}
+ \label{ExempleImageMontrantMatches}
+\end{figure}
+
+\subsection{Amélioration de la qualité des matchs GLO-7021 Seulement (8 pts)}
+Vous devriez constater que vous avez beaucoup de faux matches dans l'image. Tentez d'améliorer la qualité de ces matches, en utilisant des stratégies de votre choix. Commentez sur l'amélioration apportée par chacune de vos stratégies.
+
+\end{document}
