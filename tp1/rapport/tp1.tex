@@ -99,6 +99,11 @@ La figure \ref{carte-2d-locale} représente le nuage de point.
 
 \subsubsection{Réponse}
 \subsubsection{Calculs}
+Création de $P_{Homog\`ene}$:
+
+\[ Soit P_{Homog\`ene} = [x, y, 1] \]
+
+D\'etermination des matrices de transformation T et R:
 
 \subsubsection{Code}
 
@@ -107,8 +112,42 @@ La figure \ref{carte-2d-locale} représente le nuage de point.
 \section{Modèle de caméra et positionnement par caméra}
 
 \subsection{Génération d'une image (5 pts)}
+\label{generation_image}
 \subsubsection{Calculs}
+Soit la relation entre le point correspondant [u, v] et la position dans le monde r\'eel $ [L_{ix}, L_{iy}, L_{iz}] $
+\[ \left[ {\begin{array}{c}
+                u \\
+    v \\ \end{array} } \right] =
+    \frac{f}{L_{iz}}
+    \left[ {\begin{array}{c} L_{ix} \\ L_{iy} \\ \end{array}} \right]
+\]
+
+Comme la valeur $L_y$ est nulle, nous obtenons:
+
+
+\[ \left[ {\begin{array}{c}
+                u \\
+    v \\ \end{array} } \right] =
+    \frac{f}{L_{iz}}
+    \left[ {\begin{array}{c} L_{ix} \\ 0 \\ \end{array}} \right]
+=
+    \left[ {\begin{array}{c} \frac{f}{L_{iz}} * L_{ix} \\ \frac{f}{L_{iz}} * 0 \\ \end{array}} \right]
+=
+    \left[ {\begin{array}{c} \frac{f}{L_{iz}} * L_{ix} \\ 0 \\ \end{array}} \right]
+
+\]
+
+On peut ainsi en conclure que:
+\[
+    u =  \frac{f}{L_{iz}} * L_{ix}
+\]
+\[
+    v = 0
+\]
+o\`u u et v sont en pixels, et f = 1200 pixels.
+
 \subsubsection{Code}
+
 Le fichier HelpMePleaseImStuckInAMethodName.py contient la fonction pour convertir la position de $L_i$ en une position d'écran [u, v].
 
 \subsection{Estimation de la pose de la caméra à partir des angles $\alpha$ et $\beta$ (5 pts)}
@@ -126,8 +165,83 @@ Le fichier HelpMePleaseImStuckInAMethodName.py contient la fonction pour convert
 \section{Imagerie stéréo  (15 pts)}
 
 \subsection{Distance focale $f$ (4 pts)}
+\subsubsection{Calculs}
+Pour obtenir f, il faut connaître les valeurs [u, v] de la tour verte.
+Mesur\'ee avec une r\`egle, on obtient:
+\[ u = 0 px \text{(centre de l'image)}\]
+\[ v = 310 px\]
+Sachant que:
+\[ \text{Axe des v: } 0.7cm = 200px \]
+En reprenant la fonction trouv\'ee en \ref{generation_image}, on sait que :
+
+\[
+    u =  \frac{f}{L_{iz}} * L_{ix}
+\]
+\[
+    v =  \frac{f}{L_{iz}} * L_{iy}
+\]
+On isole $f$ dans l'\'equation de v:
+\[
+    f =  \frac{v * L_{iz}}{L_{iy}}
+\]
+
+Comme on sait que la tour fait 15cm de hauteur ($L_{iy} = 15$) et que celle-ci est \`a une distance de 95cm de la cam\'era ($L_{iz} = 95$):
+\[
+    f =  \frac{v * L_{iz}}{L_{iy}} = \frac{310px * 95 cm}{15cm} = 1963.33 px = 2000 px
+\]
+
+
+\subsubsection{Code}
+\subsubsection{Réponse}
+La distance focale est d'environ 2000 pixels.
 
 \subsection{Estimation de la distance $A_z$ de chaque tour LEGO (6 pts)}
+\label{estimation_distance_Az}
+\subsubsection{Calculs}
+
+\begin{table}[h]
+\caption{Disparit\'e $d$ mesur\'ee avec la r\`egle}
+\label{TableCoord}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+    tour   &  $u_{gauche}$  &  $u_{droite}$  &  $d$ $(u_g - u_d)$ \\
+\hline
+    rouge  & --1.75cm & -2.65cm & 0.90cm \\
+    bleu   & 1.70cm & 0.50cm & 1.20cm \\
+    jaune  & 2.50cm & 1.65cm & 0.85cm \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Pour convertir la disparit\'e en pixels, on utilise la r\`egle de de trois sachant que:
+
+\[ \text{Axe des u:} 1.2cm = 200px \]
+
+
+\begin{table}[h]
+\caption{Disparit\'e $d$ en pixels}
+\label{TableCoord}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+    tour   &  $d$ \\
+\hline
+    rouge  &  150px \\
+    bleu   &  200px \\
+    jaune  &  140px \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+On peut trouver $A_z$ avec la formule:
+\[ A_z = \frac{f \dot b}{d}\]
+Avec f = 2000px et b = 5cm.
+
+\subsubsection{Code}
+\subsubsection{Réponse}
 
 \begin{table}[h]
 \caption{Distance en $z$ des centres des faces des colonnes.}
@@ -135,11 +249,11 @@ Le fichier HelpMePleaseImStuckInAMethodName.py contient la fonction pour convert
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
- tour     &    $A_z$ \\
+ tour   & $A_z$ \\
 \hline
- rouge      &                          \\
- bleu      &                            \\
-jaune     &                         \\
+ rouge  & 67cm \\
+ bleu   & 50cm \\
+jaune   & 71cm \\
 \hline
 \end{tabular}
 \end{center}
@@ -147,6 +261,33 @@ jaune     &                         \\
 
 
 \subsection{Estimation de la coordonnée $A_x$ de chaque tour LEGO (5 pts)}
+\subsubsection{Calculs}
+On r\'eutilise les valeurs de $u_{gauche}$ mesur\'ees en \ref{estimation_distance_Az}.
+Puis, on les convertie en pixels.
+
+\begin{table}[h]
+    \caption{$u_{gauche}$ en pixels}
+\label{TableCoord}
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+    tour   &  $u_{gauche}$\\
+\hline
+    rouge  & -290px  \\
+    bleu   & 280px   \\
+    jaune  & 420px   \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Avec la trigonométrie, on peut conlure que $u_{gauche} \propto A_x$ soit :
+\[ u_g = \frac{f}{A_z}A_x\]
+\[ A_x = \frac{u_g \dot A_z}{f} \]
+Sachant que $f = 2000px$ et en utilisant les valeurs de $A_z$ trouvées en \ref{estimation_distance_Az}.
+
+\subsubsection{Code}
+\subsubsection{Réponse}
 
 \begin{table}[h]
 \caption{Coordonnée en $x$ des centres des faces des colonnes.}
@@ -154,12 +295,12 @@ jaune     &                         \\
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
- tour     &    $A_x$ \\
+ tour   &  $A_x$ \\
 \hline
- rouge      &                          \\
- vert      &                           \\
- bleu     &                            \\
- jaune     &                         \\
+ rouge  &  -9.7cm     \\
+ vert   &  0.0cm  \\
+ bleu   &  7.0cm    \\
+ jaune  &  15cm     \\
 \hline
 \end{tabular}
 \end{center}
