@@ -60,7 +60,6 @@ Soit la fonction du capteur avant bruit:
 \[ z(d) = 1/d \]
 
 Comme le capteur est bruité, il faut consid\'erer celui-ci. On mod\'elise donc la fonction avec une gaussienne:
-\[ \]
 
 \textbf{Convertir la vitesse angulaire}
 Soit :
@@ -78,7 +77,7 @@ Soit avec la trigonométrie:
 \[ x = d*\cos(\theta) \] \[ y = d*\sin(\theta) \]
 
 \subsubsection{Code}
-Le fichier bobobobobobobbo.py contient le code utilisé pour former la carte 2D.
+Le fichier question1.py contient le code utilisé pour former la carte 2D.
 \subsubsection{Carte}
 
 \begin{figure}[ht]
@@ -97,15 +96,43 @@ La figure \ref{carte-2d-locale} représente le nuage de point.
 \newpage
 \subsection{Localisation du robot dans la carte globale (10 pts)}
 
-\subsubsection{Réponse}
 \subsubsection{Calculs}
-Création de $P_{Homog\`ene}$:
+Création de $P_{Homogene}$:
 
-\[ Soit P_{Homog\`ene} = [x, y, 1] \]
+\[ \text{Soit } P_{Homogene} = 
+\begin{bmatrix} 
+    x_1 & x_2 & x_3 & ... & x_n \\ 
+    y_1 & y_2 & y_3 & ... & y_n \\ 
+    1   & 1   & 1   & ... & 1   \\
+\end{bmatrix} 
+\]
 
-D\'etermination des matrices de transformation T et R:
+D\'etermination des matrices de transformation T:
+
+Soit pour faire une translation $[T_x, T_y]$, il faut multiplier $P_{Homogene}$ par la matrice
+
+\[
+    T = 
+    \begin{bmatrix}
+        1 & 0 & T_{x} \\ 
+        0 & 1 & T_{y} \\
+        0 & 0 & 1
+    \end{bmatrix}
+    \]
+D\'etermination des matrices de transformation R:
+
+Soit pour faire une rotation de $\theta rad$, cela \'equivaut \`a multiplier par la matrice
+\[
+    R =
+    \begin{bmatrix}
+        \cos{\theta} & -\sin{\theta} & 0 \\
+        \sin{\theta} & \cos{\theta} & 0 \\
+        0 & 0 & 1 \\
+    \end{bmatrix}
+    \]
 
 \subsubsection{Code}
+\subsubsection{Réponse}
 
 % ================== CAMERA =======================
 \newpage
