@@ -97,29 +97,30 @@ La figure \ref{carte-2d-locale} représente le nuage de point.
 \subsection{Localisation du robot dans la carte globale (10 pts)}
 
 \subsubsection{Calculs}
-Création de $P_{Homogene}$:
+\textbf{Création de $P_{Homogene}$:}
 
-\[ \text{Soit } P_{Homogene} = 
-\begin{bmatrix} 
-    x_1 & x_2 & x_3 & ... & x_n \\ 
-    y_1 & y_2 & y_3 & ... & y_n \\ 
+\[ \text{Soit } P_{Homogene} =
+\begin{bmatrix}
+    x_1 & x_2 & x_3 & ... & x_n \\
+    y_1 & y_2 & y_3 & ... & y_n \\
     1   & 1   & 1   & ... & 1   \\
-\end{bmatrix} 
+\end{bmatrix}
 \]
 
-D\'etermination des matrices de transformation T:
+\textbf{D\'etermination des matrices de transformation T:}
 
 Soit pour faire une translation $[T_x, T_y]$, il faut multiplier $P_{Homogene}$ par la matrice
 
 \[
-    T = 
+    T =
     \begin{bmatrix}
-        1 & 0 & T_{x} \\ 
+        1 & 0 & T_{x} \\
         0 & 1 & T_{y} \\
         0 & 0 & 1
     \end{bmatrix}
     \]
-D\'etermination des matrices de transformation R:
+
+\textbf{D\'etermination des matrices de transformation R:}
 
 Soit pour faire une rotation de $\theta rad$, cela \'equivaut \`a multiplier par la matrice
 \[
@@ -132,6 +133,8 @@ Soit pour faire une rotation de $\theta rad$, cela \'equivaut \`a multiplier par
     \]
 
 \subsubsection{Code}
+
+
 \subsubsection{Réponse}
 
 % ================== CAMERA =======================
