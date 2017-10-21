@@ -53,6 +53,17 @@ class TestFast(unittest.TestCase):
         for i, j in fast.OFFSETS[0:12]:
             self.bright_image_with_dark_arc[i][j] = 0
 
+        self.semi_bright_corner_dark_image = self._create_image(None)
+        for i, j in fast.OFFSETS[0:12]:
+            self.semi_bright_corner_dark_image[i][j] = self.DEFAULT_THRESHOLD + 0.1
+
+        self.semi_dark_corner_bright_image = self._create_image(None)
+        for i in range(0, 7):
+            for j in range(0, 7):
+                self.semi_dark_corner_bright_image[i][j] = 1
+        for i, j in fast.OFFSETS[0:12]:
+            self.semi_dark_corner_bright_image[i][j] = self.DEFAULT_THRESHOLD - 0.1
+
     def test_givenNoCorner_whenDetectionCoinFast_thenIsNotCorner(self):
         cut = Fast(self.no_corner_image, self.DEFAULT_CENTER, self.DEFAULT_THRESHOLD)
         is_coin, _ = cut.detection_coin_fast()
@@ -96,9 +107,26 @@ class TestFast(unittest.TestCase):
     def test_givenDarkImageWithBrightCorner_whenDetectionCoinFast_thenReturnCorrectIntensityValue(self):
         cut = Fast(self.full_corner_image, self.DEFAULT_CENTER, self.DEFAULT_THRESHOLD)
         _, intensity_value = cut.detection_coin_fast()
-        expected_intensity = 12
+        expected_intensity = 16
         assert_that(intensity_value, is_(expected_intensity))
 
+    def test_givenDarkImageWithSemiBrightCorner_whenDetectionCointFast_thenReturnCorrectIntensityValue(self):
+        cut = Fast(self.semi_bright_corner_dark_image, self.DEFAULT_CENTER, self.DEFAULT_THRESHOLD)
+        _, intensity_value = cut.detection_coin_fast()
+        expected_intensity = (self.DEFAULT_THRESHOLD + 0.1) * 12
+        self.assertAlmostEqual(expected_intensity, intensity_value, places=2)
+
+    def test_givenBrightImageWithSemiDarkCorner_whenDetectionCoinFast_thenReturnCorrectIntensityValue(self):
+        cut = Fast(self.semi_dark_corner_bright_image, self.DEFAULT_CENTER, self.DEFAULT_THRESHOLD)
+        _, intensity_value = cut.detection_coin_fast()
+        expected_intensity = (1 - (self.DEFAULT_THRESHOLD - 0.1)) * 12
+        self.assertAlmostEqual(expected_intensity, intensity_value, places=2)
+
+    def test_givenFullCorner_whenDetectionCoinFast_thenReturnCorrectIntensityValue(self):
+        cut = Fast(self.full_corner_image, self.DEFAULT_CENTER, self.DEFAULT_THRESHOLD)
+        _, intensity_value = cut.detection_coin_fast()
+        expected_intensity = 16
+        self.assertAlmostEqual(expected_intensity, intensity_value)
 
     def _create_image(self, range_to_set):
         zeroed_image = self._fill_image_with_zero(np.ndarray(shape=self.DEFAULT_SHAPE))

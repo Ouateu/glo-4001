@@ -53,12 +53,14 @@ class Fast:
         if len(valid_best_offset) < 3:
             return False, 0
 
-        return self.check_for_contiguous_point(), 0
+        contiguous_point = self.check_for_contiguous_point()
+        if contiguous_point:
+            return True, sum([abs(self.center_value - self.get_value(point)) for point in contiguous_point])
+        else:
+            return False, 0
 
     def is_candidate(self, offset):
-        p = self.center + offset.to_offset()
-        x, y = p
-        value = self.image[x][y]
+        value = self.get_value(offset)
         return value < self.center_value - self.threshold or value > self.center_value + self.threshold
 
     def check_for_contiguous_point(self):
@@ -67,12 +69,27 @@ class Fast:
             offset = OFFSETS[i%16]
             if self.is_candidate(offset):
                 contiguous_point.append(offset)
+            elif len(contiguous_point) >= 12:
+                return contiguous_point
             else:
                 contiguous_point = []
 
-            if len(contiguous_point) >= 12:
-                return True
-
             if 32 - i + len(contiguous_point) < 12:
                 return False
-        return True
+            if len(contiguous_point) == 16:
+                return contiguous_point
+        return contiguous_point
+
+    def get_value(self, point):
+        point_coord = self.center + point.to_offset()
+        x, y = point_coord
+        return self.image[x, y]
+
+    def display_image(self):
+        display = "|"
+        for i in range(0, 7):
+            for j in range(0, 7):
+                 display += " ( {} )".format(self.image[i, j])
+            display += " |\n|"
+
+        print(display)
