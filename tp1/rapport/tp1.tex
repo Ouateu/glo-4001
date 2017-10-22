@@ -174,11 +174,15 @@ o\`u u et v sont en pixels, et f = 1200 pixels.
 
 \subsubsection{Code}
 
-Le fichier question2.py contient la fonction make_image_uv_pose qui convertie la position de $L_i$ en une position d'écran [u, v].
+Le fichier question2.py contient la fonction make\_image\_uv\_pose qui convertie la position de $L_i$ en une position d'écran $ [u, v] $.
 
 \subsection{Estimation de la pose de la caméra à partir des angles $\alpha$ et $\beta$ (5 pts)}
 \subsubsection{Calculs}
+Soit une fois $\alpha$ et $\beta$ obtenues, il faut retrouver la postion de la cam\'era avec ceux-ci.
+
 \subsubsection{Code}
+La fonction alpha\_beta\_from\_three\_coordinates(f, c1, c2, c3) dans question2.py est le code qui a été utilisé en classe.
+
 \subsubsection{Réponse}
 
 \subsection{Impact du bruit sur l'estimation des repères (10 pts)}
@@ -233,7 +237,7 @@ La distance focale est d'environ 2000 pixels.
 \hline
     tour   &  $u_{gauche}$  &  $u_{droite}$  &  $d$ $(u_g - u_d)$ \\
 \hline
-    rouge  & --1.75cm & -2.65cm & 0.90cm \\
+    rouge  & -1.75cm & -2.65cm & 0.90cm \\
     bleu   & 1.70cm & 0.50cm & 1.20cm \\
     jaune  & 2.50cm & 1.65cm & 0.85cm \\
 \hline
@@ -324,7 +328,7 @@ Sachant que $f = 2000px$ et en utilisant les valeurs de $A_z$ trouvées en \ref{
  tour   &  $A_x$ \\
 \hline
  rouge  &  -9.7cm     \\
- vert   &  0.0cm  \\
+ vert   &  0.0cm   \\
  bleu   &  7.0cm    \\
  jaune  &  15cm     \\
 \hline
