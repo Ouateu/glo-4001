@@ -1,18 +1,28 @@
 from scipy import ndimage
 import matplotlib.pyplot as plt
 
+import fast
 
-class Fast:
 
-    def __init__(self, image):
-        self.image = image
+DEFAULT_THRESHOLD = 10
 
 
 def main():
     f = ndimage.imread("../res/bw-rectified-left-022146small.png")
 
-    print(f)
+    corners = {}
+    max_v, max_u = f.shape
+    print(f.shape)
     plt.imshow(f, cmap='gray')
+    for v in range(max_v - 14):
+        for u in range(max_u - 14):
+            center = fast.Point(u, v)
+            detector = fast.Fast(f, center, DEFAULT_THRESHOLD)
+            is_corner, intensity = detector.detection_coin_fast()
+            if is_corner:
+                corners[center] = intensity
+                plt.plot(v, u, 'ro')
+
     plt.show()
 
 
