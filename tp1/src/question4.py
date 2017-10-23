@@ -3,7 +3,7 @@ from scipy import ndimage
 
 import fast
 
-DEFAULT_THRESHOLD = 10
+DEFAULT_THRESHOLD = 100
 
 
 def main():

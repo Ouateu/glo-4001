@@ -45,16 +45,17 @@ def main():
         xs.append(distance * m.cos(angular_position))
         ys.append(distance * m.sin(angular_position))
 
-    P = np.matrix([xs, ys])
-    PHomogeneous = P * 0.5
-    PHomogeneous = np.vstack([PHomogeneous, ])
     # plt.plot(xs, ys, 'ro')
     # plt.title("Nuage de point avec le robot en (0, 0, 0).")
     # plt.xlabel("x")
     # plt.ylabel("y")
     # plt.show()
 
-    plt.plot(PHomogeneous[0], PHomogeneous[1], 'ro')
+    p = np.matrix([xs, ys])
+    p_homogeneous = np.vstack([p, [0 for i in range(len(xs))]])
+    print(p_homogeneous)
+
+    plt.plot(p_homogeneous[0], p_homogeneous[1], 'ro')
     plt.show()
 
 
