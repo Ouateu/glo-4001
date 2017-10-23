@@ -452,21 +452,34 @@ Le fichier fast.py contient la classe Fast, qui extrait les coins d'une image av
 \end{figure}
 
 Environ 65 000 coins ont \'et\'e d\'etect\'es avec le treshold de 10.
-Pour le threshold de 100, environ une cinquantaine de coins ont \'et\'e d\'etect\'es.
+Pour le threshold de 100, 90 coins ont \'et\'e d\'etect\'es.
 
 Avec le threshold de 100, les coins rep\'er\'es ont tendance \`a \^etre devant le robot, souvent pr\`es.
 Moins de coins sont d\'etect\'es dans l'horizon.
+Le terrain étant rocailleux, il n'est pas surprenant de détecter une grande quantité de coins dans cette image.
 % ================== Descripteur BRIEF =======================
 
 \newpage
 \section{Descripteur BRIEF (17 pts pour GLO-4001, 27 pts pour GLO-7021)}
 
 \subsection{Fonction calculant un descripteur BRIEF (3 pts)}
+La fonction pour le calcul du descripteur est dans le fichier brief.py
 
 \subsection{Appariement features image gauche-droite (5 pts)}
- Appliquez votre pipeline sur les images suivantes :
- \begin{itemize}
- \item \texttt{bw-rectified-left-022146small.png} et
- \item \texttt{bw-rectified-right-022146small.png},
- \end{itemize}
+Un threshold de 100 a été utilisé pour accélérer les calculs et obtenir un résultat visualisable.
+Ce threshold après la sélection des coins les plus forts produits 9 et 14 points d'intérêts sur les images de gauche et de droite respectivement.
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.55\textwidth]{q5-appariement.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Appariement des points d'intérêts de l'image de gauche vers l'image de droite}
+    \label{appariement}
+\end{figure}
+
+La figure \ref{appariement} montre le résultat de l'appariement des points d'intérêts entre l'image de gauche et l'image de droite.
+L'image de gauche est affichée en fond.
 \end{document}
