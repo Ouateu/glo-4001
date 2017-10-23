@@ -72,9 +72,13 @@ def get_circle_intersections(c0, r0, c1, r1):
     c1x = float(c1[0])
     c1y = float(c1[1])
 
+    print("c0: {}".format(c0))
+    print("c1: {}".format(c1))
     d = m.sqrt(((c0x - c1x)**2) + ((c0y - c1y)**2))
+    print("d: {}".format(d))
     a = ((r0**2) - (r1**2) + (d**2))/(2*d)
     h = m.sqrt((r0**2)-(a**2))
+    print(h)
 
     p_milieu_x = c0x + ((a*(c1x - c0x))/d)
     p_milieu_y = c0y + ((a*(c1y - c0y))/d)
@@ -162,7 +166,7 @@ def main():
     array_of_results_y = list()
     for i in range(0, 7):
         for j in range(0, 1000):
-            pi1_x, pi1_y, pi2_x, pi2_y = loop_question23(i, ecart_type)
+            #pi1_x, pi1_y, pi2_x, pi2_y = loop_question23(i, ecart_type)
             array_of_results_x.append(pi1_x)
             array_of_results_x.append(pi2_x)
             array_of_results_y.append(pi1_y)
