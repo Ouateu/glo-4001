@@ -118,7 +118,14 @@ def loop_question23(metres_recule, ecart_type):
     c0, r0 = circle_from_pts_and_angle(L[0], L[1], alpha)
     c1, r1 = circle_from_pts_and_angle(L[1], L[2], beta)
 
-    return get_circle_intersections(c0, r0, c1, r1)
+    pi1_x, pi1_y, pi2_x, pi2_y = get_circle_intersections(c0, r0, c1, r1)
+    return get_intersection_with_smallest_y(pi1_x, pi1_y, pi2_x, pi2_y)
+
+def get_intersection_with_smallest_y(pi1_x, pi1_y, pi2_x, pi2_y):
+    if (pi1_y < pi2_y):
+        return pi1_x, pi1_y
+    else:
+        return pi2_x, pi2_y
 
 def main():
     L1 = {'x': -0.25, 'y': 0, 'z': 1.25}
@@ -157,6 +164,10 @@ def main():
     pi1_x, pi1_y, pi2_x, pi2_y = get_circle_intersections(c0, r0, c1, r1)
     print("P1: {}, {}".format(pi1_x, pi1_y))
     print("P2: {}, {}".format(pi2_x, pi2_y))
+    print("Comme on sait que la caméra doit être en avant des trois points de repères, on prend la coordonnée avec le y le plus petit ")
+    pi_x, pi_y = get_intersection_with_smallest_y(pi1_x, pi1_y, pi2_x, pi2_y)
+    
+    print("position de la caméra: {}".format([pi_x, pi_y]))
 
     ecart_type = 2
     print("======= Question 2.3 =======")
@@ -164,11 +175,9 @@ def main():
     array_of_results_y = list()
     for i in range(0, 7):
         for j in range(0, 1000):
-            pi1_x, pi1_y, pi2_x, pi2_y = loop_question23(i, ecart_type)
-            array_of_results_x.append(pi1_x)
-            array_of_results_x.append(pi2_x)
-            array_of_results_y.append(pi1_y)
-            array_of_results_y.append(pi2_y)
+            pi_x, pi_y = loop_question23(i, ecart_type)
+            array_of_results_x.append(pi_x)
+            array_of_results_y.append(pi_y)
 
     plt.plot(array_of_results_x, array_of_results_y, 'ro')
     plt.show()
