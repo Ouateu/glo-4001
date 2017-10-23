@@ -23,6 +23,9 @@ class Point:
     def __iter__(self):
         return iter([self.x, self.y])
 
+    def __hash__(self):
+        return hash((self.x, self.y))
+
     def __repr__(self):
         return "Point({}, {})".format(self.x, self.y)
 
