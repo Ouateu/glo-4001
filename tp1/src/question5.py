@@ -18,12 +18,12 @@ def pipeline(img, descriptor_config):
 
 
 def extract_keypoint(img):
-    max_u, max_v = img.shape
+    max_y, max_x = img.shape
     corners = []
-    for u in range(max_u - 16):
-        print("Col: {}".format(u + 8))
-        for v in range(max_v - 16):
-            center_point = fast.Point(u + 8, v + 8)
+    for y in range(max_y - 16):
+        print("Col: {}".format(y + 8))
+        for x in range(max_x - 16):
+            center_point = fast.Point(x + 8, y + 8)
             detector = fast.Fast(img, center_point, DEFAULT_THRESHOLD)
             is_corner, intensity = detector.detection_coin_fast()
 
