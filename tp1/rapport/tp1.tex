@@ -177,12 +177,21 @@ o\`u u et v sont en pixels, et f = 1200 pixels.
 Le fichier question2.py contient la fonction make\_image\_uv\_pose qui convertie la position de $L_i$ en une position d'écran $ [u, v] $.
 
 \subsection{Estimation de la pose de la caméra à partir des angles $\alpha$ et $\beta$ (5 pts)}
+
 \subsubsection{Calculs}
 Soit une fois $\alpha$ et $\beta$ obtenues, il faut retrouver la postion de la cam\'era avec ceux-ci.
 Pour ce faire, il faut retrouver les cercles qui sont d\'etermin\'ees par les angles $\alpha$ et $\beta$, ainsi que par la position des points de repères.
 La position en x dans le monde r\'eel des points de rep\`eres peut \^etre obtenu \`a partir de leur position dns l'image $u$ en faisaint l'inverse des calculs notés précedemment.
 
-Sachant que
+Avec deux points $l_1$ et $l_2$, ainsi que l'angle entre les deux points sur le cercle $\alpha$, on peut trouver le centre c:
+\[  \vec{c} = \vec{l_m} + \frac{1}{2\tan{\alpha}} 
+\begin{bmatrix}
+    0 & -1 \\
+    1 & 0 \\
+\end{bmatrix} (\vec{l_1} - \vec{l_2})
+\]
+
+et le rayon r est la distance entre le centre et un des deux points.
 
 Les cercles définis par les trois points sont ainsi obtenues.
 Il faut maintenant calculer les point d'intersection entre ces deux cercles.
@@ -213,16 +222,16 @@ La distance entre les deux centres de cercles $d$ est:
 \[ d = \sqrt{(P0_x - P1_x)^2 + (P0_y - P1_y)^2} \]
 \[ a = \frac{r0^2 - r1^2 + d^2}{2 \cdot d} \]
 \[ h = \sqrt{r0^2 - a^2} \]
-\[ p2_x = P0_x + \frac{a(c1_x - c0_x)}{d} \]
-\[ p2_y = P0_y + \frac{a(c1_y - c0_y)}{d} \]
+\[ P2_x = P0_x + \frac{a(P1_x - P0_x)}{d} \]
+\[ P2_y = P0_y + \frac{a(P1_y - P0_y)}{d} \]
 
 Soit on obtient deux points d'intersection:
 
-\[  p_{intersection1}x = P2_x + (h*(P1x - P0x))/d \]
-\[  p_{intersection1}y = P2_y - (h*(P1y - P0y))/d \]
+\[  p_{intersection1}x = P2_x + (h*(P1y - P0y))/d \]
+\[  p_{intersection1}y = P2_y - (h*(P1x - P0x))/d \]
 
-\[  p_{intersection2}x = P2_x - (h*(P1x - P0x))/d \]
-\[  p_{intersection2}y = P2_y + (h*(P1y - P0y))/d \]
+\[  p_{intersection2}x = P2_x - (h*(P1y - P0y))/d \]
+\[  p_{intersection2}y = P2_y + (h*(P1x - P0x))/d \]
 
 Un de ces deux points d'intersection est un de nos points de rep\`eres.
 L'autre est la position de la cam\'era.
@@ -241,9 +250,21 @@ Il y a un example de l'impl\'ementation dans le main de question2.py.
 \subsubsection{Réponse}
 
 \subsection{Impact du bruit sur l'estimation des repères (10 pts)}
-\subsubsection{Calculs}
 \subsubsection{Code}
+La fonction loop\_question23(metres\_recule, ecart\_type) est ce qui est utilis\'e pour faire les calculs pour le nuage de points bruit\'es.
+
 \subsubsection{Réponse}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.55\textwidth]{../src/reponse-question-23.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+    \caption{Position de la caméra estimé (en rouge) en relation avec la position des points de repère (en vert)}
+    \label{impact-bruit-camera}
+\end{figure}
 
 % ================== STEREO =======================
 \newpage
@@ -398,7 +419,7 @@ Sachant que $f = 2000px$ et en utilisant les valeurs de $A_z$ trouvées en \ref{
  \label{SectionFAST}
 
 \subsection{Fonction d'extraction des coins FAST (7 pts)}
-Le fichier fast.py contient la classe Fast, qui extrait les coins d'une image avec un centre et un threshold donn\'e.  
+Le fichier fast.py contient la classe Fast, qui extrait les coins d'une image avec un centre et un threshold donn\'e.
 \subsection{Test de votre fonction \texttt{DetectionCoinFAST} sur une image réelle (6 pts)}
 
 \begin{figure}[ht]
