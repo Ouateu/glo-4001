@@ -1,23 +1,7 @@
-from scipy import ndimage
 import matplotlib.pyplot as plt
+from scipy import ndimage
 
 import fast
-
-
-class Corner:
-
-    def __init__(self, point, intensity):
-        self.point = point
-        self.intensity = intensity
-
-    def __eq__(self, other):
-        assert(isinstance(other, Corner))
-        return self.intensity == other.intensity
-
-    def __lt__(self, other):
-        assert(isinstance(other, Corner))
-        return self.intensity < other.intensity
-
 
 DEFAULT_THRESHOLD = 100
 
@@ -31,11 +15,11 @@ def main():
     for u in range(max_u - 14):
         print("Col: {}".format(u))
         for v in range(max_v - 14):
-            center = fast.Point(u, v)
+            center = fast.Point(u+7, v+7)
             detector = fast.Fast(f, center, DEFAULT_THRESHOLD)
             is_corner, intensity = detector.detection_coin_fast()
             if is_corner:
-                corner = Corner(center, intensity)
+                corner = fast.Corner(center, intensity)
                 corners.append(corner)
 
     print("Nombre de coins: {}".format(len(corners)))
