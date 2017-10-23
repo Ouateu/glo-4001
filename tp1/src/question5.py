@@ -54,13 +54,43 @@ def get_patch(img, center):
     return numpy.copy(img[y-7:y+8,x-7:x+8])
 
 
+def find_appariement(left, right):
+    appariement = {}
+    for left_point in left:
+        greatest_distance = 257
+        associate_right_point = None
+        for right_point in right:
+            distance = brief.compute_hamming_distance(left[left_point], right[right_point])
+            if distance < greatest_distance:
+                associate_right_point = right_point
+        appariement[left_point] = associate_right_point
+    return appariement
+
+
 def main():
     img_left = ndimage.imread("../res/bw-rectified-left-022146small.png")
     img_right = ndimage.imread("../res/bw-rectified-right-022146small.png")
 
     descriptor_config = {'pairs': 256,
                          'seed': 1}
-    pipeline(img_left, descriptor_config)
+    left_descriptors = pipeline(img_left, descriptor_config)
+    right_descriptors = pipeline(img_right, descriptor_config)
+
+    appariement = find_appariement(left_descriptors, right_descriptors)
+    plt.imshow(img_left, cmap='gray')
+
+    x_lines = []
+    y_lines = []
+    for left_point, right_point in appariement.items():
+        xl, yl = left_point
+        xr, yr = right_point
+        x_lines.append(numpy.linspace(xl, xr, 100))
+        y_lines.append(numpy.linspace(yl, yr, 100))
+
+    for x, y in zip(x_lines, y_lines):
+        plt.plot(x, y, '-g')
+
+    plt.show()
 
 
 if __name__ == "__main__":
