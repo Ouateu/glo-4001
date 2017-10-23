@@ -207,7 +207,7 @@ o\`u:
    \[ r_0 \text{ : Le rayon du premier cercle} \]
    \[ P_1 \text{ : Le centre du deuxi\`eme cercle} \]
    \[ r_1 \text{ : Le rayon du deux\`eme cercle} \]
-    
+
 
 La distance entre les deux centres de cercles $d$ est:
 \[ d = \sqrt{(P0_x - P1_x)^2 + (P0_y - P1_y)^2} \]
@@ -230,11 +230,13 @@ L'autre est la position de la cam\'era.
 \subsubsection{Code}
 La fonction alpha\_beta\_from\_three\_coordinates(f, c1, c2, c3) dans question2.py est le code qui a été utilisé en classe pour retrouver $\alpha$ et $\beta$.
 
-La fonction circle\_from\_pts\_and\_angle(pts, angle) dans question2.py est le code qui a été utilisé en classe pour retrouver les deux cercles correspondant \`a $\alpha$ et $\beta$.
+La fonction circle\_from\_pts\_and\_angle(p1, p2, angle) dans question2.py est le code qui a été utilisé en classe pour retrouver les deux cercles correspondant \`a $\alpha$ et $\beta$.
 
-La fonction get\_circle\_intersections(c0x, c0y, r0, c1x, c1y, r1) dans question2.py retourne les deux points d'intersection du cercle.
+La fonction get\_circle\_intersections(c0, r0, c1, r1) dans question2.py retourne les deux points d'intersection du cercle.
 Un de ces deux points devrait \^etre environ la position d'un des points de rep\`eres.
 L'autre est celui de la cam\'era.
+
+Il y a un example de l'impl\'ementation dans le main de question2.py.
 
 \subsubsection{Réponse}
 
