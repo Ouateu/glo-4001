@@ -398,7 +398,25 @@ Sachant que $f = 2000px$ et en utilisant les valeurs de $A_z$ trouvées en \ref{
  \label{SectionFAST}
 
 \subsection{Fonction d'extraction des coins FAST (7 pts)}
+Le fichier fast.py contient la classe Fast, qui extrait les coins d'une image avec un centre et un threshold donn\'e.  
 \subsection{Test de votre fonction \texttt{DetectionCoinFAST} sur une image réelle (6 pts)}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.55\textwidth]{q4-detection-keypoint.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Coins d\'etect\'es avec un threshold de 100}
+    \label{detection-coin-100}
+\end{figure}
+
+Environ 65 000 coins ont \'et\'e d\'etect\'es avec le treshold de 10.
+Pour le threshold de 100, environ une cinquantaine de coins ont \'et\'e d\'etect\'es.
+
+Avec le threshold de 100, les coins rep\'er\'es ont tendance \`a \^etre devant le robot, souvent pr\`es.
+Moins de coins sont d\'etect\'es dans l'horizon.
 % ================== Descripteur BRIEF =======================
 
 \newpage
