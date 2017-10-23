@@ -203,17 +203,29 @@ Cette image vient de \url{https://stackoverflow.com/questions/3349125/circle-cir
 
 o\`u:
 
-    $P_0$ : Le centre du premier cercle
-    $r_0$ : Le rayon du premier cercle
-    $P_1$ : Le centre du deuxi\`eme cercle
-    $r_1$ : Le rayon du deux\`eme cercle
+   \[ P_0 \text{ : Le centre du premier cercle} \]
+   \[ r_0 \text{ : Le rayon du premier cercle} \]
+   \[ P_1 \text{ : Le centre du deuxi\`eme cercle} \]
+   \[ r_1 \text{ : Le rayon du deux\`eme cercle} \]
     
 
 La distance entre les deux centres de cercles $d$ est:
 \[ d = \sqrt{(P0_x - P1_x)^2 + (P0_y - P1_y)^2} \]
-o\`u $P_0$ et $P_1$ sont les centres des deux cercles obtenues.
+\[ a = \frac{r0^2 - r1^2 + d^2}{2 \cdot d} \]
+\[ h = \sqrt{r0^2 - a^2} \]
+\[ p2_x = P0_x + \frac{a(c1_x - c0_x)}{d} \]
+\[ p2_y = P0_y + \frac{a(c1_y - c0_y)}{d} \]
 
+Soit on obtient deux points d'intersection:
 
+\[  p_{intersection1}x = P2_x + (h*(P1x - P0x))/d \]
+\[  p_{intersection1}y = P2_y - (h*(P1y - P0y))/d \]
+
+\[  p_{intersection2}x = P2_x - (h*(P1x - P0x))/d \]
+\[  p_{intersection2}y = P2_y + (h*(P1y - P0y))/d \]
+
+Un de ces deux points d'intersection est un de nos points de rep\`eres.
+L'autre est la position de la cam\'era.
 
 \subsubsection{Code}
 La fonction alpha\_beta\_from\_three\_coordinates(f, c1, c2, c3) dans question2.py est le code qui a été utilisé en classe pour retrouver $\alpha$ et $\beta$.
