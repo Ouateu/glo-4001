@@ -1,3 +1,4 @@
+import math
 import matlab
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,6 +7,9 @@ import math as m
 
 
 GYRO_RATE = 25  # Hz
+TRANSLATION_X = 10
+TRANSLATION_Y = 1.7
+THETA = math.pi/4
 
 
 def get_distance(measure):
@@ -52,10 +56,15 @@ def main():
     # plt.show()
 
     p = np.matrix([xs, ys])
-    p_homogeneous = np.vstack([p, [0 for i in range(len(xs))]])
-    print(p_homogeneous)
+    p_homogeneous = np.vstack([p, [1 for i in range(len(xs))]])
 
-    plt.plot(p_homogeneous[0], p_homogeneous[1], 'ro')
+    p_t = np.matrix([[1, 0, TRANSLATION_X], [0, 1, TRANSLATION_Y], [0, 0, 1]])
+    p_r = np.matrix([[math.cos(THETA), -math.sin(THETA), 0], [math.sin(THETA), math.cos(THETA), 0], [0, 0, 1]])
+    p_transform = np.matmul(p_t, p_r)
+    p_global= np.matmul(p_transform, p_homogeneous)
+    real_map = scio.loadmat("Carte.mat")
+    plt.plot(real_map['Carte'][0], real_map['Carte'][1])
+    plt.plot(p_global[0], p_global[1], 'ro')
     plt.show()
 
 
