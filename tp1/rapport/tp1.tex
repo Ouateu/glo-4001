@@ -130,8 +130,25 @@ Soit pour faire une rotation de $\theta rad$, cela \'equivaut \`a multiplier par
 
 \subsubsection{Code}
 
+Le code est disponible dans le fichier question1.py
 
 \subsubsection{Réponse}
+
+$T_x = 10$ et $T_y = 1.7$
+$\theta = \frac{\pi}{4}$
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{q1-carte-nuage-superpose.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Carte 2D fournit avec PGlobal superpos\'e}
+    \label{carte-pglobal}
+\end{figure}
+
+La figure \ref{carte-pglobal} montre la carte réelle avec la matrice $P_{gloal}$ superposée.
 
 % ================== CAMERA =======================
 \newpage
@@ -184,7 +201,7 @@ Pour ce faire, il faut retrouver les cercles qui sont d\'etermin\'ees par les an
 La position en x dans le monde r\'eel des points de rep\`eres peut \^etre obtenu \`a partir de leur position dns l'image $u$ en faisaint l'inverse des calculs notés précedemment.
 
 Avec deux points $l_1$ et $l_2$, ainsi que l'angle entre les deux points sur le cercle $\alpha$, on peut trouver le centre c:
-\[  \vec{c} = \vec{l_m} + \frac{1}{2\tan{\alpha}} 
+\[  \vec{c} = \vec{l_m} + \frac{1}{2\tan{\alpha}}
 \begin{bmatrix}
     0 & -1 \\
     1 & 0 \\
