@@ -45,7 +45,7 @@ class Fast:
         self.center = center
         self.threshold = threshold
         cx, cy = self.center
-        self.center_value = self.image[cx][cy]
+        self.center_value = self.image[cy][cx]
 
     def detection_coin_fast(self):
         valid_best_offset = []
@@ -86,7 +86,7 @@ class Fast:
     def get_value(self, point):
         point_coord = self.center + point.to_offset()
         x, y = point_coord
-        return self.image[x, y]
+        return self.image[y][x]
 
     def display_image(self):
         display = "|"

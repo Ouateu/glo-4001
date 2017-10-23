@@ -18,12 +18,12 @@ def pipeline(img, descriptor_config):
 
 
 def extract_keypoint(img):
-    max_u, max_v = img.shape
+    max_y, max_x = img.shape
     corners = []
-    for u in range(max_u - 14):
-        print("Col: {}".format(u + 7))
-        for v in range(max_v - 14):
-            center_point = fast.Point(u + 7, v + 7)
+    for y in range(max_y - 16):
+        print("Col: {}".format(y + 8))
+        for x in range(max_x - 16):
+            center_point = fast.Point(x + 8, y + 8)
             detector = fast.Fast(img, center_point, DEFAULT_THRESHOLD)
             is_corner, intensity = detector.detection_coin_fast()
 
@@ -45,23 +45,26 @@ def extract_descriptors(img, points, config):
     descriptors = {}
     for keypoint in points:
         patch = get_patch(img, keypoint.point)
+        print("Patch:\n {}".format(patch))
         descriptors[keypoint.point] = brief.extract_brief(patch, config)
     return descriptors
 
 
 def get_patch(img, center):
     x, y = center
-    return numpy.copy(img[y-7:y+8,x-7:x+8])
+    print("Center: {}".format(center))
+    return numpy.copy(img[y-7:y+8, x-7:x+8])
 
 
 def find_appariement(left, right):
     appariement = {}
     for left_point in left:
-        greatest_distance = 257
+        smallest_distance = 257
         associate_right_point = None
         for right_point in right:
             distance = brief.compute_hamming_distance(left[left_point], right[right_point])
-            if distance < greatest_distance:
+            if distance < smallest_distance:
+                smallest_distance = distance
                 associate_right_point = right_point
         appariement[left_point] = associate_right_point
     return appariement

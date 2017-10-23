@@ -10,12 +10,13 @@ def main():
     f = ndimage.imread("../res/bw-rectified-left-022146small.png")
 
     corners = []
-    max_u, max_v = f.shape
+    max_y, max_x = f.shape
     print(f.shape)
-    for u in range(max_u - 14):
-        print("Col: {}".format(u))
-        for v in range(max_v - 14):
-            center = fast.Point(u+7, v+7)
+    for y in range(max_y - 16):
+        print("Col: {}".format(y))
+        for x in range(max_x - 16):
+            print("(x, y): ({}, {})".format(x, y))
+            center = fast.Point(x+8, y+8)
             detector = fast.Fast(f, center, DEFAULT_THRESHOLD)
             is_corner, intensity = detector.detection_coin_fast()
             if is_corner:
@@ -27,7 +28,7 @@ def main():
     xs = [corner.point.x for corner in corners]
     ys = [corner.point.y for corner in corners]
     plt.imshow(f, cmap='gray')
-    plt.plot(ys, xs, 'ro')
+    plt.plot(xs, ys, 'ro')
     plt.show()
 
 
