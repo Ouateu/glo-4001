@@ -78,7 +78,7 @@ def get_circle_intersections(c0, r0, c1, r1):
 
     p_milieu_x = c0x + ((a*(c1x - c0x))/d)
     p_milieu_y = c0y + ((a*(c1y - c0y))/d)
-    
+
 
     p_intersection1_x = p_milieu_x + ((h*(c1y - c0y))/d)
     p_intersection1_y = p_milieu_y - ((h*(c1x - c0x))/d)
@@ -166,20 +166,21 @@ def main():
     print("P2: {}, {}".format(pi2_x, pi2_y))
     print("Comme on sait que la caméra doit être en avant des trois points de repères, on prend la coordonnée avec le y le plus petit ")
     pi_x, pi_y = get_intersection_with_smallest_y(pi1_x, pi1_y, pi2_x, pi2_y)
-    
+
     print("position de la caméra: {}".format([pi_x, pi_y]))
 
     ecart_type = 2
     print("======= Question 2.3 =======")
     array_of_results_x = list()
     array_of_results_y = list()
-    for i in range(0, 7):
+    for i in range(0, 8):
         for j in range(0, 1000):
             pi_x, pi_y = loop_question23(i, ecart_type)
             array_of_results_x.append(pi_x)
             array_of_results_y.append(pi_y)
 
-    plt.plot(array_of_results_x, array_of_results_y, 'ro')
+    plt.plot(array_of_results_x, array_of_results_y, 'ro',
+             [-0.25, 0, 0.25], [1.25, 1, 1.25], 'go')
     plt.show()
 
 if __name__ == "__main__":
