@@ -7,7 +7,7 @@ import brief
 import fast
 
 
-DEFAULT_THRESHOLD = 100
+DEFAULT_THRESHOLD = 10
 
 
 def pipeline(img, descriptor_config):
