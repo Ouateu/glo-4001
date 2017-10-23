@@ -1,5 +1,5 @@
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 #import scipy.io as scio
 import math as m
 
@@ -8,7 +8,7 @@ FOCAL_DISTANCE = 1200 #Pixels
 def make_image_uv_pose(f, Lx, Ly, Lz):
     u = (f/Lz)*Lx
     v = (f/Lz)*Ly
-    return int(u), int(v)
+    return round(u), round(v)
 
 
 def distance(p1, p2):
@@ -88,7 +88,8 @@ def get_circle_intersections(c0, r0, c1, r1):
     return p_intersection1_x, p_intersection1_y, p_intersection2_x, p_intersection2_y
 
 def get_gauss(ecart_type):
-    return 0
+    sample = np.random.normal(0, ecart_type, 1)
+    return sample[0]
 
 def loop_question23(metres_recule, ecart_type):
     L1 = {'x': -0.25, 'y': 0, 'z': 1.25}
@@ -96,12 +97,15 @@ def loop_question23(metres_recule, ecart_type):
     L3 = {'x': 0.25, 'y': 0, 'z': 1.25}
 
     L = [L1, L2, L3]
+    for l in L:
+        l['z'] = l['z'] + metres_recule
     f = FOCAL_DISTANCE
 
     u_points = list()
 
     for i in range(0, len(L)):
         u, v = make_image_uv_pose(f, L[i]['x'], L[i]['y'], L[i]['z'])
+        u += get_gauss(ecart_type)
         u_points.append(u)
 
     alpha, beta = alpha_beta_from_three_coordinates(f, u_points[0], u_points[1], u_points[2])
@@ -154,10 +158,18 @@ def main():
 
     ecart_type = 2
     print("======= Question 2.3 =======")
-        for i in range(0, 7):
-            for j in range(0, 1000):
-                loop_question23(i, ecart_type) 
+    array_of_results_x = list()
+    array_of_results_y = list()
+    for i in range(0, 7):
+        for j in range(0, 1000):
+            pi1_x, pi1_y, pi2_x, pi2_y = loop_question23(i, ecart_type)
+            array_of_results_x.append(pi1_x)
+            array_of_results_x.append(pi2_x)
+            array_of_results_y.append(pi1_y)
+            array_of_results_y.append(pi2_y)
 
+    plt.plot(array_of_results_x, array_of_results_y, 'ro')
+    plt.show()
 
 if __name__ == "__main__":
     main()
