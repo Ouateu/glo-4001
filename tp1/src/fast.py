@@ -96,3 +96,18 @@ class Fast:
             display += " |\n|"
 
         print(display)
+
+
+class Corner:
+
+    def __init__(self, point, intensity):
+        self.point = point
+        self.intensity = intensity
+
+    def __eq__(self, other):
+        assert(isinstance(other, Corner))
+        return self.intensity == other.intensity
+
+    def __lt__(self, other):
+        assert(isinstance(other, Corner))
+        return self.intensity < other.intensity
