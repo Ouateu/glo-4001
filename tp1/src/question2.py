@@ -72,22 +72,19 @@ def get_circle_intersections(c0, r0, c1, r1):
     c1x = float(c1[0])
     c1y = float(c1[1])
 
-    print("c0: {}".format(c0))
-    print("c1: {}".format(c1))
     d = m.sqrt(((c0x - c1x)**2) + ((c0y - c1y)**2))
-    print("d: {}".format(d))
     a = ((r0**2) - (r1**2) + (d**2))/(2*d)
     h = m.sqrt((r0**2)-(a**2))
-    print(h)
 
     p_milieu_x = c0x + ((a*(c1x - c0x))/d)
     p_milieu_y = c0y + ((a*(c1y - c0y))/d)
+    
 
-    p_intersection1_x = p_milieu_x + (h*(c1x - c0x))/d
-    p_intersection1_y = p_milieu_y - (h*(c1y - c0y))/d
+    p_intersection1_x = p_milieu_x + ((h*(c1y - c0y))/d)
+    p_intersection1_y = p_milieu_y - ((h*(c1x - c0x))/d)
 
-    p_intersection2_x = p_milieu_x - (h*(c1x - c0x))/d
-    p_intersection2_y = p_milieu_y + (h*(c1y - c0y))/d
+    p_intersection2_x = p_milieu_x - ((h*(c1y - c0y))/d)
+    p_intersection2_y = p_milieu_y + ((h*(c1x - c0x))/d)
 
     return p_intersection1_x, p_intersection1_y, p_intersection2_x, p_intersection2_y
 
@@ -150,6 +147,7 @@ def main():
         l['z'] = 0
 
     c0, r0 = circle_from_pts_and_angle(L[0], L[1], alpha)
+    print(L)
     c1, r1 = circle_from_pts_and_angle(L[1], L[2], beta)
 
     print("c0: {}, r0: {}".format(c0, r0))
@@ -158,7 +156,7 @@ def main():
 
     pi1_x, pi1_y, pi2_x, pi2_y = get_circle_intersections(c0, r0, c1, r1)
     print("P1: {}, {}".format(pi1_x, pi1_y))
-    print("P2: {}, {}".format(pi1_x, pi1_y))
+    print("P2: {}, {}".format(pi2_x, pi2_y))
 
     ecart_type = 2
     print("======= Question 2.3 =======")
@@ -166,7 +164,7 @@ def main():
     array_of_results_y = list()
     for i in range(0, 7):
         for j in range(0, 1000):
-            #pi1_x, pi1_y, pi2_x, pi2_y = loop_question23(i, ecart_type)
+            pi1_x, pi1_y, pi2_x, pi2_y = loop_question23(i, ecart_type)
             array_of_results_x.append(pi1_x)
             array_of_results_x.append(pi2_x)
             array_of_results_y.append(pi1_y)
