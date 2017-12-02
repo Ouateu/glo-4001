@@ -2,7 +2,8 @@
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
-import particule_resampling
+from particule_resampling import Resample
+from particule_resampling import particule_resampling
 
 # Systeme representant le chariot pour le TP3, Automne 2015
 # (c) Philippe Giguere, 2015 Version 1.0
@@ -16,18 +17,18 @@ SV = 0.15       # �cart-type du bruit sur le voltage du moteur.
 nStep = 400     # Nombres de mesures/pas
 dT = 0.1        # Intervalle de temps entre les mesures/pas
 
+# Constantes pour le filtre a particules
+Reff = 0.5
+nParticules = 40
+
 # Important! Il faut initialiser la matrice X de facon a avoir
 # une dimension (2,1) et non (1,2). Sinon, le filtre EKF ne marchera pas.
 xVrai = [[d_init], [0.0]] # Etat reel, inconnu du filtre et du robot.
 
 # Specifier les valeurs initiales des matrices.
 # Ne pas oublier qu'ici, ce sont des covariances, pas des ecarts-types.
-X = np.array([[d_init], [0]])  # un exemple d'initialisation.
-
-# Constantes pour le filtre a particules
-
-nParticules = 40
-Reff = 0.5
+X = np.transpose([[d_init, 0]] * nParticules)
+w = [1]*nParticules
 
 AxVrai1 = list()
 AxVrai2 = list()
@@ -65,7 +66,11 @@ for iStep in range(1, nStep):
 
     ########## Votre code ici! #######
 
-    particule_resampling(X=X, w=w, ratio=0)
+    resample = particule_resampling(X=X, w=w, ratio=Reff)
+
+    X = resample.X
+    w = resample.w
+
 
     # ========= Fin des equations du filtre EKF ou particule =============
     
