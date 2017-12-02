@@ -1,5 +1,5 @@
 
-import numpy as nm
+import numpy as np
 import math as m
 import matplotlib.pyplot as plt
 
@@ -21,7 +21,7 @@ xVrai = [[d_init], [0.0]] # Etat reel, inconnu du filtre et du robot.
 
 # Specifier les valeurs initiales des matrices.
 # Ne pas oublier qu'ici, ce sont des covariances, pas des ecarts-types.
-X = [[d_init], [0]] # un exemple d'initialisation.
+X = np.array([[d_init], [0]]) # un exemple d'initialisation.
 P =
 
 AxVrai1 = list()
@@ -44,11 +44,11 @@ for iStep in range(1, nStep):
     # Je vous donne les equations, vous n'avez rien a changer ici.
 
     xVrai[0][0] = xVrai[0][0] + (xVrai[1][0])*dT # Calcul du deplacement
-    xVrai[1][0] = 2.*(1/(1+m.exp(-0.5*(U+nm.random.normal()*SV)))-0.5)   # Calcul de la vitesse
+    xVrai[1][0] = 2.*(1 / (1 + m.exp(-0.5 * (U + np.random.normal() * SV))) - 0.5)   # Calcul de la vitesse
     
     # Je simule pour vous la r�ponse de la cam�ra.
     # Le max(0.001,...) est pour �viter les valeurs n�gatives.
-    z = max(0.001,0.07/xVrai[1][0] + SAngle*nm.random.normal())
+    z = max(0.001, 0.07 / xVrai[1][0] + SAngle * np.random.normal())
     # =============== Fin de la simulation de deplacement reel ============   
 
     # ================ Debut de votre filtre E K F ou particule ==================
@@ -76,7 +76,7 @@ for iStep in range(1, nStep):
 
     plt.plot(ATime,AX1,'go', label='EKF')
     plt.plot(ATime,AxVrai1,'k-','LineWidth',2, label='Position Exacte')
-    plt.plot(ATime,nm.divide(0.07, AZ).tolist(),'r*', label='Mesure h_z^{-1}') # Ici on peut inverser le capteur, pour trouver la position correspondant a z.
+    plt.plot(ATime, np.divide(0.07, AZ).tolist(), 'r*', label='Mesure h_z^{-1}') # Ici on peut inverser le capteur, pour trouver la position correspondant a z.
 
     plt.xlabel('Temps (s)')
     plt.ylabel('Estime de position (m)')
