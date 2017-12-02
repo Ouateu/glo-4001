@@ -2,6 +2,7 @@
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
+import particule_resampling
 
 # Systeme representant le chariot pour le TP3, Automne 2015
 # (c) Philippe Giguere, 2015 Version 1.0
@@ -21,7 +22,7 @@ xVrai = [[d_init], [0.0]] # Etat reel, inconnu du filtre et du robot.
 
 # Specifier les valeurs initiales des matrices.
 # Ne pas oublier qu'ici, ce sont des covariances, pas des ecarts-types.
-X = [[d_init], [0]]  # un exemple d'initialisation.
+X = np.array([[d_init], [0]])  # un exemple d'initialisation.
 
 # Constantes pour le filtre a particules
 
@@ -64,6 +65,8 @@ for iStep in range(1, nStep):
 
     ########## Votre code ici! #######
 
+    particule_resampling(X=X, w=w, ratio=0)
+
     # ========= Fin des equations du filtre EKF ou particule =============
     
     # Cueillette des donnees pour les graphiques/statistiques
@@ -78,8 +81,8 @@ for iStep in range(1, nStep):
     # Pour voir votre filtre evoluer dans le temps
     plt.clf()
 
-    plt.plot(ATime,AX1,'go', label='EKF')
-    plt.plot(ATime,AxVrai1,'k-','LineWidth',2, label='Position Exacte')
+    plt.plot(ATime, AX1, 'go', label='EKF')
+    plt.plot(ATime, AxVrai1, 'k-', 'LineWidth', 2, label='Position Exacte')
     plt.plot(ATime, np.divide(0.07, AZ).tolist(), 'r*', label='Mesure h_z^{-1}') # Ici on peut inverser le capteur, pour trouver la position correspondant a z.
 
     plt.xlabel('Temps (s)')
