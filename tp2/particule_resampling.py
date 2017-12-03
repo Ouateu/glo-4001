@@ -62,4 +62,4 @@ def particule_resampling(X, w, ratio):
         w = np.divide(([1] * nParticules), nParticules).tolist()
         X = X[:, copy]
 
-        return Resample(X=X, w=w)
+    return Resample(X=X, w=w)

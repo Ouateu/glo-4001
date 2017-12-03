@@ -73,10 +73,7 @@ for iStep in range(1, nStep):
 
         w[i_particule] = gauss(x=alpha, sigma=SAngle) * w[i_particule]
 
-    resample = particule_resampling(X=X, w=w, ratio=Reff)
-
-    X = resample.X
-    w = resample.w
+    X, w = particule_resampling(X=X, w=w, ratio=Reff)
 
     X_moyen = [0, 0]
     X_moyen[0] = sum(np.multiply(X[0], w))
