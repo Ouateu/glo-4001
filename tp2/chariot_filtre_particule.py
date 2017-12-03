@@ -91,16 +91,17 @@ for iStep in range(1, nStep):
     ATime.append(time)
     
     # Pour voir votre filtre evoluer dans le temps
-    plt.clf()
+plt.clf()
 
-    plt.plot(ATime, AX1, 'go', label='EKF')
-    plt.plot(ATime, AxVrai1, 'k-', 'LineWidth', 2, label='Position Exacte')
-    plt.plot(ATime, np.divide(0.07, AZ).tolist(), 'r*', label='Mesure h_z^{-1}') # Ici on peut inverser le capteur, pour trouver la position correspondant a z.
+plt.plot(ATime, AX1, 'go', label='filtre a particules')
+plt.plot(ATime, AxVrai1, 'k-', 'LineWidth', 2, label='Position Exacte')
+plt.plot(ATime, np.divide(0.07, AZ).tolist(), 'r*', label='Mesure h_z^{-1}') # Ici on peut inverser le capteur, pour trouver la position correspondant a z.
 
-    plt.xlabel('Temps (s)')
-    plt.ylabel('Estime de position (m)')
-    plt.legend()
+plt.xlabel('Temps (s)')
+plt.ylabel('Estime de position (m)')
+plt.legend()
 
-    plt.ylim(0, 20)
+plt.ylim(0, 20)
 
-    plt.draw()
+plt.draw()
+plt.show()
