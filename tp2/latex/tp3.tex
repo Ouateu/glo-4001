@@ -21,7 +21,7 @@
 \addtolength{\textheight}{1.75in}
 
 \begin{document}
-\selectlanguage{frenchb} 
+\selectlanguage{frenchb}
 \title{Introduction à la robotique mobile : travail pratique 3  \\  Date de remise : 8 décembre 2017, 23h55.}
 %\subtitle{Travail Pratique No 1}
 \author{Instructeur : Philippe Giguère}
@@ -40,7 +40,7 @@ N'oubliez pas d'inclure TOUS les scripts/fonctions dans le fichier .zip. Vous po
 
 Pour les étudiants en GLO-7021, le rapport doit être rédigé sur Latex.
 
-% ========================= D e s c r i p t i o n    P r o b l è m e  ========================= 
+% ========================= D e s c r i p t i o n    P r o b l è m e  =========================
 \newpage
 \section {Description d'un problème d'estimation d'état}
 \label{DescriptionProbleme}
@@ -48,7 +48,7 @@ Pour les étudiants en GLO-7021, le rapport doit être rédigé sur Latex.
 \begin{figure}[ht]
  \begin{center}
   \begin{tabular}{c}
-    \includegraphics[width=0.60\textwidth]{ChariotCamera.png} 
+    \includegraphics[width=0.60\textwidth]{ChariotCamera.png}
   \end{tabular}
  \end{center}
  \vspace{-0.3in}
@@ -77,7 +77,7 @@ Cette relation est illustrée à la Fig. \ref{CurveVolt}. L'écart-type du bruit
 \begin{figure}[ht]
  \begin{center}
   \begin{tabular}{c}
-    \includegraphics[width=0.64\textwidth]{CurveVolt.png} 
+    \includegraphics[width=0.64\textwidth]{CurveVolt.png}
   \end{tabular}
  \end{center}
  \vspace{-0.3in}
@@ -93,7 +93,7 @@ d  \\
 \end{equation}
 où $\dot{d}$ est la vitesse du robot. Au départ, le robot est placé à $d_{init}=3$ $m$, et le chariot est au repos, i.e $\dot{d}=0$. Le code matlab fourni \texttt{Chariot.m} utilise $\Delta t=0.1~s$, ce qui signifie que les déplacements sont effectués et les mesures sont prises à chaque $\Delta t$. Ce même code calcule la commande (Eq.~\ref{Commande}), la position réelle du chariot et simule les mesures (Eq.~\ref{Mesure}) pour ces positions réelles.
 
-% =========================   F i l t r e   à   p a r t i c u l e s   ========================= 
+% =========================   F i l t r e   à   p a r t i c u l e s   =========================
 \section {Solution par filtre à particules (10 pts)}
 \label{Particules}
 Afin de vous familiariser avec la notion de filtrage, faites un filtre à particules pour le problème décrit à la section \ref{DescriptionProbleme}, à partir d'une copie du fichier \texttt{Chariot.m} et du code fournis sur le site web du cours pour les filtres à particules. Pour ce filtre, utilisez les paramètres suivants :
@@ -104,10 +104,10 @@ Afin de vous familiariser avec la notion de filtrage, faites un filtre à partic
 
 Pour l'estimé de la position $d$, prenez la moyenne pondérée des particules : \texttt{Xmoyen = sum(X(1,:).*w);} Testez votre filtre à particules pour 400 itérations (donc de $t=0$ $s$ à $t=40$ $s$) uniquement pour le cas où vous connaissez exactement la position initiale du robot au départ. Vous initialisez donc toutes les particules avec $X=[d_{init} \mbox{ }0]^T$.
 
-Note : le filtre à particules n'est pas nécessairement la meilleure solution pour ce problème, car la distribution des croyances sur l'état est unimodale. Cependant, l'implémentation est plus facile à faire et à débugger qu'un filtre EKF, et cela vous permettra en quelque sorte de vérifier que toutes les équations du systèmes sont les bonnes. D'ailleurs, ces équations vous sont essentiellement données dans \texttt{Chariot.m}, car il simule déjà le système ;). 
+Note : le filtre à particules n'est pas nécessairement la meilleure solution pour ce problème, car la distribution des croyances sur l'état est unimodale. Cependant, l'implémentation est plus facile à faire et à débugger qu'un filtre EKF, et cela vous permettra en quelque sorte de vérifier que toutes les équations du systèmes sont les bonnes. D'ailleurs, ces équations vous sont essentiellement données dans \texttt{Chariot.m}, car il simule déjà le système ;).
 
 
-% =========================   E K F  ========================= 
+% =========================   E K F  =========================
 \newpage
 \section{Filtre Kalman étendu (EKF) (40 pts pour GLO-4001, 35 pts pour GLO-7021)}
 \label{EKF}
@@ -121,6 +121,28 @@ La matrice $\Phi$ du système est
 \end{equation}
 
 Quelles sont les matrices jacobiennes de commande $\Gamma$ et de mesure $\Lambda$ pour ce système? Important! La matrice $\Gamma$ est utilisée pour propager le bruit de moteur en Volt vers des $m/s$.
+
+\subsubsection{Détermination de $\Gamma$}
+Soit nous définissons $\Gamma$ comme la matrice de dérivé des fonctions de mesure selon la commande:
+\begin{equation}
+\Gamma =
+\begin{bmatrix}
+    0   \\
+    \\
+    \dfrac{\exp(-u/2)}{(1+\exp(-u/2))^2} \\
+\end{bmatrix}
+\end{equation}
+
+\subsubsection{Détermination de $\Lambda$}
+\begin{equation}
+\Lambda =
+\begin{bmatrix}
+    \dfrac{-0.07}{(\dot{d} \cdot \Delta t + d )^2}   \\
+    \\
+    \dfrac{-0.07 \Delta t}{(\dot{d} \cdot \Delta t + d )^2}   \\
+\end{bmatrix}
+\end{equation}
+
 
 \subsection{Implémentation du filtre EKF (30 pts pour GLO-4001, 25 pts pour GLO-7021)}
 Implémentez le filtre de Kalman étendu (EKF) à partir d'une copie du fichier incomplet matlab \texttt{Chariot.m} pour estimer la position $d$ du robot\footnote{Attention! pour ceux qui feront le code en python, méfiez-vous de l'opérateur \texttt{*}, car il peut donner l'impression que c'est une multiplication de matrices, alors que dans les faits c'est une multiplication entrée-par-entrée pour des \texttt{Array} et matricielle pour des \texttt{numpy.matrix}. Bref, un beau piège subtil...}. Testez votre filtre de Kalman pour 400 itérations (donc de $t=0$~$s$ à $t=40$~$s$), avec les scénarios suivants :
@@ -184,7 +206,7 @@ Notez que le code matlab inclus dans le TP fait déjà ces graphiques pour vous.
 %\end{itemize}
 
 
-% =========================   F i l t r e   à   p a r t i c u l e s   ========================= 
+% =========================   F i l t r e   à   p a r t i c u l e s   =========================
 \newpage
 \section {Localisation globale par filtre à particules (35 pts)}
 \label{LocalisationGlobale}
@@ -201,7 +223,7 @@ Pour tous les cas, nous allons utiliser le même monde qu'au TP1, c'est à dire 
 \begin{figure}[ht]
  \begin{center}
   \begin{tabular}{c}
-    \includegraphics[width=0.65\textwidth]{CartePlusRobotLiDAR.png} 
+    \includegraphics[width=0.65\textwidth]{CartePlusRobotLiDAR.png}
   \end{tabular}
  \end{center}
  \vspace{-0.3in}
