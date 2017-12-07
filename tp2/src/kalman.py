@@ -12,8 +12,6 @@ d_init = 3  # Point de depart du robot
 S_angle = 0.003  # ecart-type du bruit sur la mesure d'angle.
 S_volt = 0.15  # ecart-type du bruit sur le voltage du moteur.
 S_speed = (2 * (1 / (1 + math.exp(-S_volt/2)) - 0.5))**2
-Cv = np.matrix('0; {}'.format(S_speed, S_speed))  # bruit sur la propagation
-Cw = np.matrix('{} 0; 0 0'.format(S_angle**2, S_angle**2))  # bruit sur la mesure
 
 number_steps = 400  # Nombres de mesures/pas
 # number_steps = 50  # Nombres de mesures/pas
@@ -26,7 +24,7 @@ X_vrai = [[d_init], [0.0]]  # Etat reel, inconnu du filtre et du robot.
 # Specifier les valeurs initiales des matrices.
 # Ne pas oublier qu'ici, ce sont des covariances, pas des ecarts-types.
 X = np.matrix(np.array([[d_init+1], [0]]))
-P = np.matrix(np.array([[25, 0], [0, 1]]))
+P = np.matrix(np.array([[100, 0], [0, 1]]))
 
 Ax_vrai1 = []
 Ax_vrai2 = []
@@ -66,7 +64,8 @@ for step in range(1, number_steps):
 
     # Jacobiennes
     F = np.matrix(np.array([[1, delta_t], [0, 0]]))
-    G = np.matrix(np.array([[0], [math.exp(U / 2) / (1 + math.exp(U / 2)) ** 2]]))
+    G = np.matrix(np.array([[delta_t * (math.exp(U / 2) / (1 + math.exp(U / 2)) ** 2)],
+                            [math.exp(U / 2) / (1 + math.exp(U / 2)) ** 2]]))
     H = np.matrix('{} 0'.format(-0.07 / X[0]**2))
 
     P = F * P * F.T + G * G.T * S_volt**2
@@ -103,4 +102,5 @@ for step in range(1, number_steps):
     plt.ylim(0, 20)
 
     plt.draw()
-    plt.show()
+
+plt.show()
