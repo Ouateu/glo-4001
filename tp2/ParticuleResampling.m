@@ -43,7 +43,11 @@ function [X w] = ParticuleResampling(X,w,Ratio)
             end
         end
         % Copie des particules, selon leur poids
+        if(isequal(X, X(:, Copy)))
+            diplay('aucun changement!');
+        end
         w = ones(1,nParticules)./nParticules;
         X = X(:,Copy);
+        
     end
 end
