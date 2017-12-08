@@ -50,9 +50,9 @@ def particule_resampling(X, w, ratio):
         index = 0
         jindex = 0
 
-        while index <= nParticules:
+        while index < nParticules:
             if T[index] < Q[jindex]:
-                copy[index] = jindex + 1
+                copy[index] = jindex
                 index = index + 1
             else:
                 jindex = jindex + 1
@@ -60,6 +60,8 @@ def particule_resampling(X, w, ratio):
 
         # Copie des particules, selon leur poids
         w = np.divide(([1] * nParticules), nParticules).tolist()
-        X = X[:, copy]
+        Xt = np.transpose(X)
+        newXt = Xt[copy]
+        X = np.transpose(newXt)
 
-    return Resample(X=X, w=w)
+    return X, w
