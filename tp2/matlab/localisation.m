@@ -14,9 +14,9 @@ dt = 0.1;
 % Init du GT
 XVrai = 2;
 YVrai = 1;
-OmegaVrai = pi/2;
+OmegaVrai = pi/3;
 linearSpeed = 1;
-angularSpeed = deg2rad(-25);
+angularSpeed = deg2rad(-50);
 lidarDirections = [0, pi/2, pi, 3*pi/2]; %offset de chacun des lidars
 vraiLidars = zeros(2, 4);
 
@@ -91,8 +91,8 @@ for step = 1:NSteps
     wNorm = sum(w);
     w = w./wNorm;
     
-    xWeight = 0
-    yWeight = 0
+    xWeight = 0;
+    yWeight = 0;
     for i = 1:C
         xWeight = particules(1, i) * w(i) + xWeight;
         yWeight = particules(2, i) * w(i) + yWeight;
