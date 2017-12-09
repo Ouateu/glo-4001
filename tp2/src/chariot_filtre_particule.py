@@ -31,7 +31,7 @@ xVrai = [[d_init], [0.0]] # Etat reel, inconnu du filtre et du robot.
 X = np.transpose([[d_init, 0]] * nParticules)
 w = [1]*nParticules
 
-AxVrai1 = list()
+Ax_vrai1 = list()
 AxVrai2 = list()
 AX1 = list()
 AX2 = list()
@@ -68,10 +68,12 @@ for iStep in range(1, nStep):
     ########## Votre code ici! #######
 
     for i_particule in range(0, nParticules):
-        X[0][i_particule] = 0.07/alpha
+        X[0][i_particule] = X[0][i_particule] + (X[1][i_particule])*dT
         X[1][i_particule] = 2.*(1 / (1 + m.exp(-0.5 * (U + np.random.normal() * SV))) - 0.5)
 
-        w[i_particule] = gauss(x=alpha, sigma=SAngle) * w[i_particule]
+        alpha_estime = 0.07 / X[0][i_particule]
+
+        w[i_particule] = gauss(x=alpha_estime, sigma=SAngle) * w[i_particule]
 
     X, w = particule_resampling(X=X, w=w, ratio=Reff)
 
@@ -82,20 +84,18 @@ for iStep in range(1, nStep):
     # ========= Fin des equations du filtre EKF ou particule =============
     
     # Cueillette des donnees pour les graphiques/statistiques
-    AxVrai1.append(xVrai[0][0])
-    AxVrai2.append(xVrai[1][0])
+    Ax_vrai1.append(xVrai[0][0])
     AX1.append(X_moyen[0])
-    AX2.append(X_moyen[1])
-    AU.append(U)
     AZ.append(alpha)
     ATime.append(time)
     
     # Pour voir votre filtre evoluer dans le temps
+    # Pour voir votre filtre evoluer dans le temps
 plt.clf()
 
-plt.plot(ATime, AX1, 'go', label='filtre a particules')
-plt.plot(ATime, AxVrai1, 'k-', 'LineWidth', 2, label='Position Exacte')
-plt.plot(ATime, np.divide(0.07, AZ).tolist(), 'r*', label='Mesure h_z^{-1}') # Ici on peut inverser le capteur, pour trouver la position correspondant a z.
+plt.plot(ATime, AX1, 'go', label='Filtre à particules')
+plt.plot(ATime, Ax_vrai1, 'k-', label='Position Exacte')
+plt.plot(ATime, np.divide(0.07, AZ).tolist(), 'r*', label='Mesure h_z^{-1}')
 
 plt.xlabel('Temps (s)')
 plt.ylabel('Estime de position (m)')
@@ -104,4 +104,5 @@ plt.legend()
 plt.ylim(0, 20)
 
 plt.draw()
+
 plt.show()

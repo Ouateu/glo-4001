@@ -28,7 +28,23 @@
 \maketitle
 
 \section {Solution par filtre à particules (10 pts)}
+Le fichier \textit{src/chariot\_filtre\_particule.py} contient le code de filtre \`a particules.
 
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{fig/filtre-particule-chariot.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Résultat du filtre à particules sur le chariot}
+    \label{chariot-filtre-particule}
+\end{figure}
+
+La figure \ref{chariot-filtre-particule} montre le r\'esultat du filtre.
+
+\begin{figure}
+\end{figure}
 
 \section{Filtre Kalman étendu (EKF) (40 pts pour GLO-4001, 35 pts pour GLO-7021)}
 \label{EKF}
@@ -42,7 +58,7 @@ Soit nous définissons $\Gamma$ comme la matrice de dérivé des fonctions de me
 \begin{bmatrix}
     0   \\
     \\
-    \dfrac{\exp(-u/2)}{(1+\exp(-u/2))^2} \\
+    \dfrac{e^{u/2}}{(1+e^{u/2})^2} \\
 \end{bmatrix}
 \end{equation}
 
@@ -50,50 +66,83 @@ Soit nous définissons $\Gamma$ comme la matrice de dérivé des fonctions de me
 \begin{equation}
 \Lambda =
 \begin{bmatrix}
-    \frac{-0.07}{d^2}   \\
-    0
+    \dfrac{-0.07}{d^2} & 0
 \end{bmatrix}
 \end{equation}
 
 \subsection{Implémentation du filtre EKF (30 pts pour GLO-4001, 25 pts pour GLO-7021)}
-\begin{enumerate}[a)]
-\item Vous connaissez exactement la position initiale du robot au départ. Vous initialisez donc la matrice d'état à $X=[d_{init} \mbox{ }0]^T$, et la matrice de covariance à
-$$
-P=
-\begin{bmatrix}
-0 &0\\
-0 & 0
-\end{bmatrix}
-$$
 
-\item Vous avez une bonne idée de la position initiale du robot au départ, mais vous n'êtes pas confiant à $100~\%$. Vous initialisez donc la matrice d'état à $X=[d_{init} \mbox{ }0]^T$, et la matrice de covariance à
-$$
-P=
-\begin{bmatrix}
-25 &0\\
-0 & 1
-\end{bmatrix}
-$$
+Le fichier \textit{src/kalman.py} contient le code de filtre de Kalman étendu.
 
-\item Vous croyez connaitre exactement la position initiale du robot au départ, mais cette valeur est, dans les faits, erronée. Vous initialisez donc la matrice d'état à $X=[(d_{init}+1) \mbox{  } 0]^T$, et la matrice de covariance à
-$$
-P=
-\begin{bmatrix}
-0 &0\\
-0 & 0
-\end{bmatrix}
-$$
+\subsubsection{Vous connaissez exactement la position initiale du robot au départ.}
 
-\item Vous n'êtes pas sûr que $d=d_{init}+1$ est la bonne position de départ du chariot. Vous initialisez donc la matrice d'état à $X=[(d_{init}+1)  \mbox{  }  0]^T$, et la matrice de covariance reflète cette incertitude car vous l'initialisez à:
-$$
-P=
-\begin{bmatrix}
-100 &0\\
-0 & 1
-\end{bmatrix}
-$$
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{fig/kalman-position-exacte.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+ \caption{Résultat du filtre de Kalman lorsque la position de départ est exacte}
+    \label{kalman-position-exacte}
+\end{figure}
 
+\subsubsection{Vous avez une bonne idée de la position initiale du robot au départ, mais vous n'êtes pas confiant à $100~\%$.}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{fig/kalman-position-exacte-incertitude.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+    \caption{Résultat du filtre de Kalman lorsque la position de départ est exacte, mais avec une incertitude.}
+    \label{kalman-position-exacte-incertitude}
+\end{figure}
+
+\subsubsection{Vous croyez connaitre exactement la position initiale du robot au départ, mais cette valeur est, dans les faits, erronée.}
+
+Deux cas peuvent se produire:
+\begin{enumerate}
+    \item On ne fait pas de corrections
+    \item On fait une correction
 \end{enumerate}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{fig/kalman-position-err-certitude-pas-correction.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+    \caption{Résultat du filtre de Kalman lorsque la position de départ est considérée comme exacte, mais est fausse (sans la correction)}
+    \label{kalman-position-err-certitude-pas-correction}
+\end{figure}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{fig/kalman-position-err-certitude-correction.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+    \caption{Résultat du filtre de Kalman lorsque la position de départ est considérée comme exacte, mais est fausse (avec la correction)}
+    \label{kalman-position-err-certitude-pas-correction}
+\end{figure}
+
+\subsubsection{Vous n'êtes pas sûr que $d=d_{init}+1$ est la bonne position de départ du chariot.}
+
+\begin{figure}[ht]
+ \begin{center}
+  \begin{tabular}{c}
+    \includegraphics[width=0.75\textwidth]{fig/kalman-position-err-incertitude.png}
+  \end{tabular}
+ \end{center}
+\vspace{-0.25in}
+    \caption{Résultat du filtre de Kalman lorsque la position de départ est fausse, mais avec une incertitude.}
+    \label{kalman-position-err-incertitude}
+\end{figure}
+
 
 \section {Localisation globale par filtre à particules (35 pts)}
 
