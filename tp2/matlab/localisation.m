@@ -83,6 +83,34 @@ for step = 1:NSteps
        particules(4, i) = wnew;
     end
     
+    % Resampling
+    w = particules(4, :);
+    wNorm = sum(w);
+    w = w./wNorm;
+    Neff = 1/sum(w.^2);
+    display(Neff)
+    if Neff < 0.3*C
+        display('Resampling')
+        Copy = zeros(1, C);
+        Q = cumsum(w);
+        T = sort(rand(1, C+1));
+        T(C+1) = 1;
+        idx = 1;
+        jdx = 1;
+        while (idx <= C)
+            if T(idx) < Q(jdx)
+                Copy(idx) = jdx;
+                idx = idx + 1;
+            else
+                jdx = jdx + 1;
+            end
+        end
+        w = ones(1, C)./C;
+        particules(4,:) = w;
+        particules = particules(:,Copy);
+        
+    end
+    
     % Affichage de la simulation
     hold off
     clf
