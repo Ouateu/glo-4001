@@ -41,7 +41,7 @@ Le fichier \textit{src/chariot\_filtre\_particule.py} contient le code de filtre
     \label{chariot-filtre-particule}
 \end{figure}
 
-La figure \ref{chariot-filtre-particule} montre le r\'esultat du filtre.
+La figure \ref{chariot-filtre-particule} montre le r\'esultat du filtre à particules.
 
 \begin{figure}
 \end{figure}
@@ -52,7 +52,22 @@ La figure \ref{chariot-filtre-particule} montre le r\'esultat du filtre.
 \subsection{Matrices Jacobiennes (10 pts)}
 
 \subsubsection{Détermination de $\Gamma$}
-Soit nous définissons $\Gamma$ comme la matrice de dérivé des fonctions de mesure selon la commande:
+Soit nous définissons $\Gamma$ comme la matrice jacobienne des fonctions de mesure selon la commande:
+\begin{equation}
+\Gamma =
+\begin{bmatrix}
+    \dfrac{df_{position}}{du}   \\
+    \\
+    \dfrac{df_{vitesse}}{du}   \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \dfrac{d}{du} \left[\dfrac{-0.07}{\alpha}\right]   \\
+    \\
+    \dfrac{d}{du} \left[\dfrac{2}{1+e^{-u/2}}-1\right] \\
+\end{bmatrix}
+\end{equation}
+
 \begin{equation}
 \Gamma =
 \begin{bmatrix}
@@ -63,6 +78,18 @@ Soit nous définissons $\Gamma$ comme la matrice de dérivé des fonctions de me
 \end{equation}
 
 \subsubsection{Détermination de $\Lambda$}
+Soit nous définissons $\Lambda$ comme la matrice jacobienne des fonctions de la valeur du capteur selon les mesures.
+\begin{equation}
+\Lambda =
+\begin{bmatrix}
+    \dfrac{df_{\alpha}}{d\text{position}}  & \dfrac{df_{\alpha}}{d\text{vitesse}}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \dfrac{d}{d\text{position}} \left[\dfrac{0.07}{d}\right] & \dfrac{d}{d\text{vitesse}}\left[\dfrac{0.07}{d}\right]
+\end{bmatrix}
+\end{equation}
+
 \begin{equation}
 \Lambda =
 \begin{bmatrix}
@@ -87,6 +114,11 @@ Le fichier \textit{src/kalman.py} contient le code de filtre de Kalman étendu.
     \label{kalman-position-exacte}
 \end{figure}
 
+La figure \ref{kalman-position-exacte} présente le résultat du filtre.
+Comme nous sommes certains de notre position, aucune modification n'est apporté sur le filtre.
+Toutefois, comme notre position est bonne, les valeurs données par le filtre sont bonnes.
+
+
 \subsubsection{Vous avez une bonne idée de la position initiale du robot au départ, mais vous n'êtes pas confiant à $100~\%$.}
 
 \begin{figure}[ht]
@@ -100,13 +132,13 @@ Le fichier \textit{src/kalman.py} contient le code de filtre de Kalman étendu.
     \label{kalman-position-exacte-incertitude}
 \end{figure}
 
+La figure \ref{kalman-position-exacte-incertitude} présente le résultat du filtre.
+Comme nous avons un certains niveau d'incertitude, de légères modification sont faites au filtre lors d'une différence entre les mesures et la prédiction.
+Comme nous avons une bonne valeure de départ, les modifications sont minimes.
+
 \subsubsection{Vous croyez connaitre exactement la position initiale du robot au départ, mais cette valeur est, dans les faits, erronée.}
 
 Deux cas peuvent se produire:
-\begin{enumerate}
-    \item On ne fait pas de corrections
-    \item On fait une correction
-\end{enumerate}
 
 \begin{figure}[ht]
  \begin{center}
@@ -119,6 +151,10 @@ Deux cas peuvent se produire:
     \label{kalman-position-err-certitude-pas-correction}
 \end{figure}
 
+Sans corrections, nous obtenons le résultat de la figure \ref{kalman-position-err-certitude-pas-correction}.
+Comme nous avons une certitude que nous sommes au bon endroit, aucune correctionn'est fait au filtre.
+Ainsi, aucune modification au gain n'est fait et la valeur du filtre a toujours une différence d'environ 1 mètre avec la vrai valeure.
+
 \begin{figure}[ht]
  \begin{center}
   \begin{tabular}{c}
@@ -127,8 +163,42 @@ Deux cas peuvent se produire:
  \end{center}
 \vspace{-0.25in}
     \caption{Résultat du filtre de Kalman lorsque la position de départ est considérée comme exacte, mais est fausse (avec la correction)}
-    \label{kalman-position-err-certitude-pas-correction}
+    \label{kalman-position-err-certitude-correction}
 \end{figure}
+
+Cela peut être réglée en apportant une correction à $\Gamma$.
+Si l'on définit la position comme:
+\begin{equation}
+    d = d_{precedent} + \dot{d} \Delta t
+    = d_{precedent} + \left(\dfrac{2}{1+e^{-u/2}}-1\right) \Delta t
+\end{equation}
+%$\alpha$ devient:
+%\begin{equation}
+%    \alpha = \frac{0.07}{d_{precedent} + \dot{d} \Delta t}
+%\end{equation}
+%
+%Ce qui donne un $\Lambda$:
+%
+%\begin{equation}
+%\Lambda =
+%\begin{bmatrix}
+%    \dfrac{-0.07}{(d+ \dot{d}\Delta t)^2} & \dfrac{-0.07 \Delta t}{(d+ \dot{d}\Delta t)^2}
+%\end{bmatrix}
+%\end{equation}
+
+Ce qui donne un $\Gamma$:
+\begin{equation}
+\Gamma =
+\begin{bmatrix}
+    \dfrac{e^{u/2} \Delta t}{(1+e^{u/2})^2}   \\
+    \\
+    \dfrac{e^{u/2}}{(1+e^{u/2})^2} \\
+\end{bmatrix}
+\end{equation}
+
+
+Nous obtenons alors la figure \ref{kalman-position-err-certitude-correction}.
+Celle-ci se corrige tranquillement avec le temps.
 
 \subsubsection{Vous n'êtes pas sûr que $d=d_{init}+1$ est la bonne position de départ du chariot.}
 
@@ -142,6 +212,11 @@ Deux cas peuvent se produire:
     \caption{Résultat du filtre de Kalman lorsque la position de départ est fausse, mais avec une incertitude.}
     \label{kalman-position-err-incertitude}
 \end{figure}
+
+La figure \ref{kalman-position-err-incertitude} présente le résultat du filtre.
+Comme nous avons un certains niveau d'incertitude, de légères modification sont faites au filtre lors d'une différence entre les mesures et la prédiction.
+Comme nous avons une valeure de départ érronée, les modifications sont au filtre sont plus aggressive.
+Le filtre compense la différence d'environ 1 mètre entre la distance  mesurée et celle prédite.
 
 
 \section {Localisation globale par filtre à particules (35 pts)}
