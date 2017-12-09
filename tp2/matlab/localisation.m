@@ -25,6 +25,9 @@ C = 100;
 particules = zeros(4, 100);
 lidars = zeros(2, 400);
 
+% Mise en memoire de la trajectoire
+trajectory = [];
+
 for i = 1:C
     x = rand()*20;
     y = rand()*7;
@@ -87,6 +90,16 @@ for step = 1:NSteps
     w = particules(4, :);
     wNorm = sum(w);
     w = w./wNorm;
+    
+    xWeight = 0
+    yWeight = 0
+    for i = 1:C
+        xWeight = particules(1, i) * w(i) + xWeight;
+        yWeight = particules(2, i) * w(i) + yWeight;
+    end
+    nextTrajectory = [xWeight; yWeight];
+    trajectory = [trajectory nextTrajectory];
+    
     Neff = 1/sum(w.^2);
     display(Neff)
     if Neff < 0.3*C
@@ -111,16 +124,13 @@ for step = 1:NSteps
         
     end
     
-    % Affichage de la simulation
-    hold off
-    clf
-    hold on
-    plot(Carte(1, :), Carte(2, :), 'b-')
-    plot(XVrai, YVrai, 'ro')
-    plot(vraiLidars(1, :), vraiLidars(2, :), 'rx')
-
-    plot(particules(1, :), particules(2, :), 'go')
-    drawnow limitrate
 end
-
-%plot(lidars(1, :), lidars(2, :), 'rx')
+    % Affichage de la simulation
+hold off
+clf
+hold on
+plot(Carte(1, :), Carte(2, :), 'b-')
+plot(XVrai, YVrai, 'ro')
+plot(vraiLidars(1, :), vraiLidars(2, :), 'rx')
+plot(particules(1, :), particules(2, :), 'go')
+plot(trajectory(1, :), trajectory(2, :), 'r-')
